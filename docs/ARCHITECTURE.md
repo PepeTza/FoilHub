@@ -54,7 +54,7 @@ infrastructure  →  interface-adapters  →  application  →  domain
 Prohibido:
 - `domain/` y `application/` **no** importan `@nestjs/*`, `@prisma/*`, `src/generated/**`, `class-validator`, `bcryptjs`, `jsonwebtoken`, ni nada de capas externas.
 - `interface-adapters/` **no** importa nada de `infrastructure/`.
-- Se refuerza con `no-restricted-imports` en ESLint (ver tarea A1 del plan). `npm run lint` debe fallar si alguien rompe la regla.
+- Se refuerza con `no-restricted-imports` en oxlint (`backend/.oxlintrc.json`, ver tarea A1 del plan). `npm run lint` debe fallar si alguien rompe la regla.
 
 ### Cómo se conecta Nest sin ensuciar el dominio
 

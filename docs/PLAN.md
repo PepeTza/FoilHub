@@ -26,14 +26,14 @@ Las dos personas deben entender todo el sistema. Por eso:
 
 ```bash
 git checkout main && git pull
-git checkout -b feat/A3-auth-use-cases        # <tipo>/<ID>-<descripcion-corta>
+git checkout -b feat/A3b-auth-use-cases       # <tipo>/<ID>-<descripcion-corta>
 claude                                         # desde la raíz del repo
 ```
 
 Prompt base (cambien el ID):
 
 ```
-Lee CLAUDE.md, docs/ARCHITECTURE.md y la tarea A3 en docs/PLAN.md.
+Lee CLAUDE.md, docs/ARCHITECTURE.md y la tarea A3b en docs/PLAN.md.
 Primero muéstrame un plan con los archivos que vas a crear o modificar y espera mi OK.
 Después implementa la tarea cumpliendo todos sus criterios de aceptación,
 corre lint, build y tests, y termina con un resumen de lo que hiciste y lo que quedó pendiente.
@@ -42,13 +42,13 @@ corre lint, build y tests, y termina con un resumen de lo que hiciste y lo que q
 Después:
 1. Revisen el diff ustedes (`git diff main`). No hagan merge de código que no entienden: lo van a tener que defender.
 2. Marquen el checkbox de la tarea en este archivo dentro del mismo PR.
-3. `git push` y abran el PR. La otra persona lo revisa. También puede pedirle a su Claude Code: `Revisa la rama feat/A3-... contra CLAUDE.md y los criterios de A3 en docs/PLAN.md. Lista problemas, no corrijas nada.`
+3. `git push` y abran el PR. La otra persona lo revisa. También puede pedirle a su Claude Code: `Revisa la rama feat/A3b-... contra CLAUDE.md y los criterios de A3b en docs/PLAN.md. Lista problemas, no corrijas nada.`
 4. Squash merge a `main`.
 
 ### Consejos
 
 - Una tarea = una rama = una sesión. Usen `/clear` entre tareas para que el contexto no se mezcle.
-- Si Claude Code intenta instalar Prisma 8 (`@prisma/orm-postgres`, `contract.prisma`) o quitar una regla de ESLint para que pase el lint, deténganlo y recuérdenle `CLAUDE.md`.
+- Si Claude Code intenta instalar Prisma 8 (`@prisma/orm-postgres`, `contract.prisma`) o quitar una regla del linter (oxlint) para que pase el lint, deténganlo y recuérdenle `CLAUDE.md`.
 - Si una tarea necesita cambiar el contrato de la API, primero abran un PR pequeño que solo modifique `docs/ARCHITECTURE.md` §6, apruébenlo los dos y después sigan.
 - Para tareas grandes (A4, A7, B5), pídanle que trabaje por partes y que corra los tests al final de cada parte.
 
@@ -63,12 +63,33 @@ Después:
 | Ruta | Dueño | La otra persona |
 |---|---|---|
 | `backend/src/domain/**`, `backend/src/application/**` (excepto `use-cases/cards/`) | A | revisa |
-| `backend/src/**/cards/**`, `cards.controller.ts`, `prisma-card.repository.ts`, `infrastructure/external/**`, `infrastructure/cli/**` | B | revisa |
+| `backend/src/interface-adapters/di-tokens.ts` (todos los tokens, también los de cartas) | A | pide cambios en el PR |
+| `backend/src/**/cards/**`, `cards.controller.ts`, `prisma-card.repository.ts`, `infrastructure/modules/cards.module.ts`, `infrastructure/external/**`, `infrastructure/cli/**` | B | revisa |
 | `backend/prisma/schema.prisma` y migraciones | A | pide cambios en el PR |
+| `backend/package.json`, `backend/package-lock.json` | A | B no ejecuta `npm install <pkg>` en `backend/`: lo pide en un PR de A |
+| `backend/.oxlintrc.json`, `backend/tsconfig*.json`, `backend/nest-cli.json`, `backend/.env.example` | A | revisa |
+| `backend/test/fakes/**` | A, **excepto** `in-memory-card.repository.ts` (lo crea A en A3a y después es de B) | revisa |
+| `backend/test/e2e/` (configuración y helpers: levantar la app, limpiar `foilhub_test`) | A (lo crea en A4) | revisa |
+| `backend/test/e2e/cards*.e2e-spec.ts` | B | revisa |
 | `backend/src/infrastructure/modules/app.module.ts` | compartido | cada uno solo agrega la importación de su módulo |
 | `backend/Dockerfile`, `backend/docker/`, `nginx/`, `docker-compose.yml`, `docker-stack.yml`, `scripts/`, `.github/` | B | revisa |
 | `frontend/**` | B | revisa |
+| `README.md` | B hasta J2; en J2 lo cierran los dos | no lo toca antes de J2 |
 | `docs/ARCHITECTURE.md` (contrato) | ambos | cambios con aprobación de los dos |
+| `docs/PLAN.md` | ambos | cada PR solo marca el checkbox de su tarea |
+
+### Ramas y conflictos
+
+- **Ramas cortas:** una tarea por rama, de preferencia ≤ 2 días. Cada mañana y antes de abrir el PR: `git fetch && git rebase origin/main`.
+- **Orden de merge que desbloquea al otro** (A prioriza estos PRs y B los revisa el mismo día):
+  1. A1 (fin del día 2) → desbloquea B3.
+  2. A3a (puertos + tokens + fakes) y A4 (Prisma + `CoreModule` + harness e2e) → desbloquean B4.
+  3. A5 → desbloquea B6.
+  4. A6 / A7 → B7 / B8 cambian los fixtures por la API real.
+- **Conflicto en `package-lock.json`:** quedarse con la versión de `main` (`git checkout origin/main -- backend/package-lock.json`), correr `npm install` en `backend/` y hacer commit del lockfile regenerado. Nunca editarlo a mano.
+- **Conflicto en `app.module.ts`:** conservar las dos líneas de import.
+- **Checkboxes de este archivo:** cada PR marca solo el suyo; están en líneas distintas y no chocan.
+- **Si necesitas cambiar un archivo de la otra persona:** no lo cambies en tu rama. Coméntalo en la reunión diaria o abre un issue, y el dueño lo hace en un PR pequeño.
 
 ---
 
@@ -81,12 +102,13 @@ flowchart LR
     T0 --> B2[B2 Scaffold frontend]
     A1 --> A2[A2 Dominio]
     A1 --> B3[B3 Dockerfile API]
-    A2 --> A3[A3 Puertos + auth UC]
-    A2 --> A4[A4 Prisma + repos]
+    A2 --> A3a[A3a Puertos + tokens + fakes]
+    A3a --> A3b[A3b Casos de uso auth]
+    A2 --> A4[A4 Prisma + repos + CoreModule]
     B1 --> A4
-    A3 --> A5[A5 Auth HTTP]
+    A3b --> A5[A5 Auth HTTP]
     A4 --> A5
-    A3 --> B4[B4 Catálogo de cartas]
+    A3a --> B4[B4 Catálogo de cartas]
     A4 --> B4
     B2 --> B5[B5 nginx + stack + Swarm local]
     B3 --> B5
@@ -114,8 +136,8 @@ flowchart LR
 |---|---|---|---|
 | 1 | T0 (juntos) | T0 (juntos) | Contrato de la API congelado |
 | 2–4 | A1, A2 | B1, B2, B3 | **H1:** tests de dominio en verde, Postgres local, imagen de la API construye |
-| 5–9 | A3, A4, A5 | B2b, B4, B5, B6 | **H2:** login funcionando a través de nginx en Swarm local, con el sistema visual aplicado |
-| 10–14 | A6, A7 | B7, B8, empieza B9 | **H3:** flujo completo (oferta → propuesta → aceptar) en Swarm local |
+| 5–9 | A3a (primero, ~½ día), A4, A3b, A5 | B2b, B5, B4 (cuando estén A3a y A4), B6 (cuando esté A5) | **H2:** login funcionando a través de nginx en Swarm local, con el sistema visual aplicado |
+| 10–14 | A6, A7 | B7, B8 (empiezan con fixtures), empieza B9 | **H3:** flujo completo (oferta → propuesta → aceptar) en Swarm local |
 | 15–17 | A8, A9 | B9, B10 (opcional) | **H4:** todo desplegado en AWS |
 | 18–19 | J1–J3 (juntos) | J1–J3 (juntos) | Entrega |
 
@@ -145,18 +167,18 @@ Reunión diaria de 15 minutos: qué terminé, qué sigue, qué me bloquea. Los h
 ## Fase 1 — Cimientos (días 2–4)
 
 ### A1 · Scaffold del backend — *A* · depende de T0
-- [ ] A1 completada
+- [x] A1 completada
 
 - `nest new backend` (npm, ESM; si el scaffold en ESM da problemas con Prisma, usen CommonJS y actualicen la línea "Módulos" de `CLAUDE.md`).
 - Crear la estructura de carpetas por capa de `CLAUDE.md` (con `.gitkeep` donde estén vacías). Mover `main.ts` y el módulo raíz a `src/infrastructure/`.
 - Instalar Prisma **7** fijado: `npm i -D prisma@7` + `npm i @prisma/client@7 @prisma/adapter-pg@7 pg`. Crear `prisma.config.ts` y `prisma/schema.prisma` con solo `generator` y `datasource` (los modelos van en A4). Salida del cliente en `src/generated/prisma`.
   - `prisma` también debe quedar disponible en la imagen de producción para `migrate deploy` (B3 lo necesita).
-- ESLint con `no-restricted-imports` por capa (ver abajo).
+- Linter con `no-restricted-imports` por capa (ver abajo). *Nota de implementación: Nest 12 genera **oxlint** en vez de ESLint; la misma regla vive en `backend/.oxlintrc.json` (overrides por carpeta, `regex` para rutas relativas).*
 - `main.ts`: prefijo global `api`, `ValidationPipe` (`whitelist`, `forbidNonWhitelisted`, `transform`), `app.enableShutdownHooks()`, puerto desde `PORT` (por defecto 3000).
 - `domain/errors/domain-error.ts` (clase base con `code`) y `interface-adapters/http/filters/domain-exception.filter.ts` que aplica la tabla de §3 y el formato de error de §6 (registrado global).
 - `infrastructure/config/`: función `readSecret(name)` que devuelve el contenido de `process.env[name + '_FILE']` si existe, o `process.env[name]`; error claro si no hay ninguno.
 - `GET /api/health` y `GET /api/health/live` con `@nestjs/terminus` en `infrastructure/health/` (por ahora ninguno consulta la BD; A4 agrega el chequeo solo a `/api/health`).
-- Scripts en `package.json`: `start:dev`, `start:prod`, `build`, `lint`, `test`, `test:e2e`.
+- Scripts en `package.json`: `start:dev`, `start:prod`, `build`, `lint`, `test`, `test:e2e`. Declarar también **desde ya** los de tareas futuras, aunque apunten a archivos que todavía no existen, para que nadie más tenga que tocar `package.json`: `cards:import` / `cards:import:prod` (→ `src/infrastructure/cli/import-cards.ts`, B4) y `seed:demo` / `seed:demo:prod` (A9).
 - `backend/.env.example` con `PORT`, `DATABASE_URL`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `CARD_CATALOG_SOURCE`.
 
 Configuración de ESLint (flat config) a adaptar:
@@ -284,17 +306,30 @@ Objetivo: que todas las pantallas se vean como una sola app y que Claude Code no
 ## Fase 2 — Auth, catálogo y Swarm local (días 5–9)
 
 ### A3 · Puertos y casos de uso de auth — *A* · depende de A2
-- [ ] A3 completada
 
-- **Todos** los puertos de `docs/ARCHITECTURE.md` §4 en `application/ports/` (también los de cartas, para que B4 pueda empezar), con el tipo `Page<T>`.
+Se entrega en **dos PRs** para que B4 no espere a los casos de uso de auth.
+
+#### A3a · Puertos, tokens y fakes (PR pequeño, ~½ día; es lo primero que hace A en la fase 2)
+- [ ] A3a completada
+
+- **Todos** los puertos de `docs/ARCHITECTURE.md` §4 en `application/ports/` (también los de cartas), con el tipo `Page<T>`.
+- `interface-adapters/di-tokens.ts` con **todos** los tokens: repositorios (incluido `CARD_REPOSITORY`), `UNIT_OF_WORK`, `PASSWORD_HASHER`, `TOKEN_SERVICE`, `CARD_CATALOG_PROVIDER`, `ID_GENERATOR`, `CLOCK`. B no edita este archivo.
+- Fakes en `backend/test/fakes/`: `InMemoryUserRepository`, `InMemoryCardRepository`, `InMemoryTradeOfferRepository`, `InMemoryTradeProposalRepository`, `InMemoryUnitOfWork`, `FakePasswordHasher`, `FakeTokenService`, `SequentialIdGenerator`, `FixedClock`. Después del merge, `in-memory-card.repository.ts` pasa a ser de B.
+
+**Criterios de aceptación**
+- `npm run lint`, `npm run build` y `npm test` pasan.
+- Los puertos no importan nada fuera de `domain/` y `application/`.
+
+#### A3b · Casos de uso de auth — depende de A3a
+- [ ] A3b completada
+
 - `RegisterUserUseCase`, `LoginUserUseCase`, `GetCurrentUserUseCase`.
-- Fakes en `backend/test/fakes/`: `InMemoryUserRepository`, `InMemoryCardRepository`, `InMemoryTradeOfferRepository`, `InMemoryTradeProposalRepository`, `InMemoryUnitOfWork`, `FakePasswordHasher`, `FakeTokenService`, `SequentialIdGenerator`, `FixedClock`.
 
 **Criterios de aceptación**
 - Tests de los tres casos de uso: registro correcto, username repetido (sin distinguir mayúsculas), contraseña débil, login correcto, usuario inexistente y clave incorrecta devuelven el **mismo** error.
-- Ni los casos de uso ni los puertos importan nada fuera de `domain/` y `application/`.
+- Los casos de uso no importan nada fuera de `domain/` y `application/`.
 
-### A4 · Persistencia con Prisma — *A* · depende de A2, B1
+### A4 · Persistencia con Prisma — *A* · depende de A2, A3a, B1
 - [ ] A4 completada
 
 - Modelos de `docs/ARCHITECTURE.md` §5 en `schema.prisma`; primera migración `init` + migración con el índice único parcial (SQL manual).
@@ -302,6 +337,8 @@ Objetivo: que todas las pantallas se vean como una sola app y que Claude Code no
 - Mappers y repositorios Prisma de `User`, `TradeOffer`, `TradeProposal` (el de `Card` lo hace B en B4) y `PrismaUnitOfWork`.
 - `TradeOfferRepository.save`: al cerrar una oferta usa `updateMany({ where: { id, status: 'OPEN' } })` y lanza `ConcurrencyConflictError` si afecta 0 filas.
 - Agregar el chequeo de BD a `/api/health` (`PrismaHealthIndicator` de terminus o un `SELECT 1`). `/api/health/live` sigue sin consultar la BD.
+- `infrastructure/modules/core.module.ts` (`@Global`): exporta `PrismaService`, `ID_GENERATOR` (`CryptoIdGenerator`), `CLOCK` (`SystemClock`), `UNIT_OF_WORK` y los repositorios de `User`, `TradeOffer` y `TradeProposal`. El de cartas **no** va aquí: lo provee y exporta `CardsModule` (B4). Con esto B4 puede cablear su módulo sin esperar a A5.
+- Harness de e2e en `backend/test/e2e/`: configuración de `test:e2e`, helper que levanta la app Nest contra `foilhub_test` y limpia las tablas entre tests. B4 y A5 escriben sus specs encima, cada uno en su propio archivo.
 
 **Criterios de aceptación**
 - `npx prisma migrate dev` crea las tablas en una base vacía; `npx prisma migrate deploy` funciona en la base de test.
@@ -310,10 +347,10 @@ Objetivo: que todas las pantallas se vean como una sola app y que Claude Code no
 - Con Postgres detenido, `/api/health` devuelve `503` y `/api/health/live` sigue devolviendo `200`.
 - Ningún tipo de `src/generated/prisma` aparece en `application/` ni en `domain/`.
 
-### A5 · Auth por HTTP — *A* · depende de A3, A4
+### A5 · Auth por HTTP — *A* · depende de A3b, A4
 - [ ] A5 completada
 
-- Capa 4: `BcryptPasswordHasher` (`bcryptjs`, costo 12), `JwtTokenService` (`@nestjs/jwt`, secreto con `readSecret('JWT_SECRET')`, expiración `JWT_EXPIRES_IN`), `CryptoIdGenerator`, `SystemClock`, `AuthModule` y un módulo compartido que exporta `ID_GENERATOR`, `CLOCK`, `UNIT_OF_WORK` y los repositorios.
+- Capa 4: `BcryptPasswordHasher` (`bcryptjs`, costo 12), `JwtTokenService` (`@nestjs/jwt`, secreto con `readSecret('JWT_SECRET')`, expiración `JWT_EXPIRES_IN`) y `AuthModule` (usa el `CoreModule` de A4).
 - Capa 3: `AuthController` (`register`, `login`, `me`), DTOs de request con `class-validator`, presenters, `JwtAuthGuard`, `OptionalJwtAuthGuard` (no falla sin token, para `GET /api/offers`), decorador `@CurrentUser()`.
 - `@nestjs/throttler` solo en `/api/auth/*` (por ejemplo 10 peticiones/minuto).
 
@@ -322,13 +359,13 @@ Objetivo: que todas las pantallas se vean como una sola app y que Claude Code no
 - La contraseña no aparece en ninguna respuesta ni en los logs.
 - Las respuestas siguen exactamente el contrato de §6.
 
-### B4 · Catálogo de cartas — *B* · depende de A3, A4
+### B4 · Catálogo de cartas — *B* · depende de A3a, A4
 - [ ] B4 completada
 
 - Casos de uso: `SearchCardsUseCase`, `GetCardByCodeUseCase`, `ImportCardCatalogUseCase` (upsert por `code`; omite y cuenta las cartas con código inválido).
 - Capa 3: `PrismaCardRepository` + mapper; `CardsController` (`GET /api/cards`, `GET /api/cards/:code`); presenter `CardDto`.
-- Capa 4: `DigimonCardIoCatalogProvider` (con `fetch`), `JsonFileCatalogProvider` que lee `backend/prisma/seed/cards.sample.json`, elegido con `CARD_CATALOG_SOURCE=digimoncardio|file`; `CardsModule`.
-- CLI `infrastructure/cli/import-cards.ts` (contexto standalone de Nest) y scripts `cards:import` (desarrollo) y `cards:import:prod` (`node dist/...`).
+- Capa 4: `DigimonCardIoCatalogProvider` (con `fetch`), `JsonFileCatalogProvider` que lee `backend/prisma/seed/cards.sample.json`, elegido con `CARD_CATALOG_SOURCE=digimoncardio|file`; `CardsModule`, que provee **y exporta** `CARD_REPOSITORY` (A6 lo importa). Usa `PrismaService` e `ID_GENERATOR` del `CoreModule` de A4.
+- CLI `infrastructure/cli/import-cards.ts` (contexto standalone de Nest). Los scripts `cards:import` y `cards:import:prod` ya los declaró A1: B4 **no** modifica `package.json` (y no necesita dependencias nuevas: usa `fetch` nativo).
 - `cards.sample.json` con ~40 cartas reales de 2–3 sets (obtenidas una sola vez del API), para desarrollo, tests y por si el API externo falla en la demo.
 - Documentación del API externo: https://documenter.getpostman.com/view/14059948/TzecB4fH . Tiene límite de peticiones: el catálogo se importa **una vez** a la BD; la API de FoilHub nunca llama a digimoncard.io en una petición de usuario.
 
@@ -380,6 +417,7 @@ Juntos: `scripts/build-push.sh v0.1.0`, deploy en Swarm local, registrarse e ini
 
 - Casos de uso de ofertas de `docs/ARCHITECTURE.md` §4: crear, listar abiertas, listar mías, detalle, cancelar (con auto-rechazo de propuestas en `UnitOfWork`), buscar matches.
 - `OffersController` con los endpoints de §6; `OfferPresenter` (necesita cartas y dueño: cargarlos en lote, sin N+1).
+- `OffersModule` importa `CardsModule` (de B4) para obtener `CARD_REPOSITORY`; no lo vuelve a declarar.
 - `GET /api/offers` usa `OptionalJwtAuthGuard` para excluir las ofertas propias si hay sesión.
 
 **Criterios de aceptación**
@@ -400,6 +438,7 @@ Juntos: `scripts/build-push.sh v0.1.0`, deploy en Swarm local, registrarse e ini
 ### B7 · Frontend: ofertas — *B* · depende de A6, B2b (puede empezar antes con datos simulados usando los tipos del contrato)
 - [ ] B7 completada
 
+- Si A6 todavía no está en `main`: las llamadas viven en `src/api/offers.ts` y devuelven fixtures tipados con `types.ts`. Al mergear A6 solo cambia la implementación de esas funciones, no las pantallas.
 - Buscador de cartas con autocompletado (`GET /api/cards?search=`), con imagen y código.
 - Explorar ofertas (filtros por carta ofrecida/buscada, paginación), detalle de oferta, crear oferta, mis ofertas (filtro por estado, botón cancelar, sección "Matches").
 
@@ -408,7 +447,7 @@ Juntos: `scripts/build-push.sh v0.1.0`, deploy en Swarm local, registrarse e ini
 - Estados de carga, vacío y error en cada pantalla.
 - Las pantallas solo usan componentes de `components/ui/` y `components/trading/` y tokens del tema; `npm run check:styles` pasa. Se ven bien a 360 px.
 
-### B8 · Frontend: propuestas — *B* · depende de A7
+### B8 · Frontend: propuestas — *B* · depende de A7 (puede empezar antes con fixtures en `src/api/proposals.ts`, igual que B7)
 - [ ] B8 completada
 
 - En el detalle de una oferta ajena: "Proponer trade" con mensaje opcional y selector de "mi oferta que hace match" (de `GET /api/offers/:id/matches` sobre mis ofertas, o filtrando mis ofertas abiertas).
@@ -490,7 +529,7 @@ Ensayar dos veces el guion de `docs/DEPLOY-AWS.md` (§ Guion de demo), cronometr
 - [ ] J3 completada
 
 Preparar respuestas cortas para:
-- ¿Dónde está la regla de dependencia y cómo la hacen cumplir? (ESLint + estructura + `useFactory`)
+- ¿Dónde está la regla de dependencia y cómo la hacen cumplir? (oxlint `no-restricted-imports` + estructura + `useFactory`)
 - ¿Qué pasa si se cae un nodo worker? ¿Y el manager? (1 manager = sin alta disponibilidad del plano de control; con 3 managers se tolera la caída de 1)
 - ¿Por qué la base de datos tiene una sola réplica y está fijada a un nodo?
 - ¿Cómo llegan los secretos a los contenedores y por qué no son variables de entorno?

@@ -310,7 +310,7 @@ Objetivo: que todas las pantallas se vean como una sola app y que Claude Code no
 Se entrega en **dos PRs** para que B4 no espere a los casos de uso de auth.
 
 #### A3a · Puertos, tokens y fakes (PR pequeño, ~½ día; es lo primero que hace A en la fase 2)
-- [ ] A3a completada
+- [x] A3a completada
 
 - **Todos** los puertos de `docs/ARCHITECTURE.md` §4 en `application/ports/` (también los de cartas), con el tipo `Page<T>`.
 - `interface-adapters/di-tokens.ts` con **todos** los tokens: repositorios (incluido `CARD_REPOSITORY`), `UNIT_OF_WORK`, `PASSWORD_HASHER`, `TOKEN_SERVICE`, `CARD_CATALOG_PROVIDER`, `ID_GENERATOR`, `CLOCK`. B no edita este archivo.
@@ -321,7 +321,7 @@ Se entrega en **dos PRs** para que B4 no espere a los casos de uso de auth.
 - Los puertos no importan nada fuera de `domain/` y `application/`.
 
 #### A3b · Casos de uso de auth — depende de A3a
-- [ ] A3b completada
+- [x] A3b completada
 
 - `RegisterUserUseCase`, `LoginUserUseCase`, `GetCurrentUserUseCase`.
 
@@ -330,7 +330,7 @@ Se entrega en **dos PRs** para que B4 no espere a los casos de uso de auth.
 - Los casos de uso no importan nada fuera de `domain/` y `application/`.
 
 ### A4 · Persistencia con Prisma — *A* · depende de A2, A3a, B1
-- [ ] A4 completada
+- [x] A4 completada
 
 - Modelos de `docs/ARCHITECTURE.md` §5 en `schema.prisma`; primera migración `init` + migración con el índice único parcial (SQL manual).
 - `infrastructure/prisma/prisma.service.ts` (extiende el cliente generado, usa `@prisma/adapter-pg`, conecta en `onModuleInit`, desconecta al apagar).
@@ -348,7 +348,7 @@ Se entrega en **dos PRs** para que B4 no espere a los casos de uso de auth.
 - Ningún tipo de `src/generated/prisma` aparece en `application/` ni en `domain/`.
 
 ### A5 · Auth por HTTP — *A* · depende de A3b, A4
-- [ ] A5 completada
+- [x] A5 completada
 
 - Capa 4: `BcryptPasswordHasher` (`bcryptjs`, costo 12), `JwtTokenService` (`@nestjs/jwt`, secreto con `readSecret('JWT_SECRET')`, expiración `JWT_EXPIRES_IN`) y `AuthModule` (usa el `CoreModule` de A4).
 - Capa 3: `AuthController` (`register`, `login`, `me`), DTOs de request con `class-validator`, presenters, `JwtAuthGuard`, `OptionalJwtAuthGuard` (no falla sin token, para `GET /api/offers`), decorador `@CurrentUser()`.

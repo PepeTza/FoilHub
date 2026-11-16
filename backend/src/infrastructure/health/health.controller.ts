@@ -1,18 +1,30 @@
 import { Controller, Get } from '@nestjs/common';
-import { HealthCheck, HealthCheckService } from '@nestjs/terminus';
+import {
+  HealthCheck,
+  HealthCheckService,
+  PrismaHealthIndicator,
+} from '@nestjs/terminus';
+import { PrismaService } from '../prisma/prisma.service.js';
 
 @Controller('health')
 export class HealthController {
-  constructor(private readonly health: HealthCheckService) {}
+  constructor(
+    private readonly health: HealthCheckService,
+    private readonly prismaHealth: PrismaHealthIndicator,
+    private readonly prisma: PrismaService,
+  ) {}
 
-  /** Monitoreo y demo. A4 agrega aquí el chequeo de la base de datos. */
+  /** Readiness: consulta la BD. 503 si no responde. Para monitoreo y la demo. */
   @Get()
   @HealthCheck()
   check() {
-    return this.health.check([]);
+    return this.health.check([
+      () =>
+        this.prismaHealth.pingCheck('database', this.prisma, { timeout: 1500 }),
+    ]);
   }
 
-  /** Healthcheck de Docker: nunca consulta la BD (ver CLAUDE.md, reglas de Swarm). */
+  /** Liveness: nunca consulta la BD. Lo usa el healthcheck de Docker (ver CLAUDE.md). */
   @Get('live')
   @HealthCheck()
   live() {

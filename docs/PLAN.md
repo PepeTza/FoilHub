@@ -376,7 +376,7 @@ Se entrega en **dos PRs** para que B4 no espere a los casos de uso de auth.
 - Tests de los casos de uso con fakes y un e2e de búsqueda.
 
 ### B5 · nginx, stack de Swarm y scripts — *B* · depende de B2, B3
-- [ ] B5 completada
+- [x] B5 completada
 
 - `nginx/Dockerfile` multi-stage (contexto = raíz del repo): etapa `node:24-alpine` que hace `npm ci && npm run build` en `frontend/`, etapa `nginx:stable-alpine` que copia `dist/` y `nginx/nginx.conf`.
 - Build arg `APP_VERSION` (lo pasa `build-push.sh` con el tag) expuesto al frontend como `VITE_APP_VERSION` y mostrado en el footer. Así el rolling update de la demo se ve en el navegador.

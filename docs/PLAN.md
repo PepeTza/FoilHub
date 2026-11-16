@@ -396,7 +396,7 @@ Se entrega en **dos PRs** para que B4 no espere a los casos de uso de auth.
 - nginx arranca bien aunque la API todavía no esté lista (gracias al `resolver`).
 
 ### B6 · Frontend: autenticación real — *B* · depende de A5, B2b
-- [ ] B6 completada
+- [x] B6 completada
 
 - Conectar Login y Registro a la API. Mostrar los errores del contrato en español. Cerrar sesión. Si una respuesta es `401`, borrar el token y redirigir a `/login`.
 

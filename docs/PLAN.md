@@ -348,7 +348,7 @@ Se entrega en **dos PRs** para que B4 no espere a los casos de uso de auth.
 - Ningún tipo de `src/generated/prisma` aparece en `application/` ni en `domain/`.
 
 ### A5 · Auth por HTTP — *A* · depende de A3b, A4
-- [ ] A5 completada
+- [x] A5 completada
 
 - Capa 4: `BcryptPasswordHasher` (`bcryptjs`, costo 12), `JwtTokenService` (`@nestjs/jwt`, secreto con `readSecret('JWT_SECRET')`, expiración `JWT_EXPIRES_IN`) y `AuthModule` (usa el `CoreModule` de A4).
 - Capa 3: `AuthController` (`register`, `login`, `me`), DTOs de request con `class-validator`, presenters, `JwtAuthGuard`, `OptionalJwtAuthGuard` (no falla sin token, para `GET /api/offers`), decorador `@CurrentUser()`.

@@ -11,7 +11,13 @@ export default defineConfig({
     globals: true,
     root: './',
     include: ['test/**/*.e2e-spec.ts', 'test/**/*.int-spec.ts'],
-    env: { DATABASE_URL: TEST_DATABASE_URL },
+    env: {
+      DATABASE_URL: TEST_DATABASE_URL,
+      JWT_SECRET: 'e2e-secret',
+      JWT_EXPIRES_IN: '1h',
+      // Los e2e hacen muchos register/login: el límite real (10/min) se prueba a mano.
+      AUTH_THROTTLE_LIMIT: '1000',
+    },
     globalSetup: ['./test/e2e/global-setup.ts'],
     // Todos los archivos comparten la misma base: uno a la vez.
     fileParallelism: false,

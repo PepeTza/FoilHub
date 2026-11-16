@@ -4,6 +4,8 @@ import type {
 } from '../../src/application/ports/token-service.port.js';
 
 export class FakeTokenService implements TokenService {
+  readonly expiresInSeconds = 3600;
+
   async sign(payload: TokenPayload): Promise<string> {
     return `token:${payload.sub}:${payload.username}`;
   }

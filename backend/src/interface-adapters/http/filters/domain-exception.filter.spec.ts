@@ -3,6 +3,7 @@ import {
   HttpException,
   HttpStatus,
   NotFoundException,
+  ServiceUnavailableException,
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -44,7 +45,9 @@ describe('DomainExceptionFilter', () => {
   });
 
   it('errores de ValidationPipe → 400 VALIDATION_ERROR con la lista de campos', () => {
-    const body = filter.toBody(new BadRequestException(['username must be a string']));
+    const body = filter.toBody(
+      new BadRequestException(['username must be a string']),
+    );
     expect(body).toEqual({
       statusCode: 400,
       error: 'VALIDATION_ERROR',
@@ -53,13 +56,25 @@ describe('DomainExceptionFilter', () => {
   });
 
   it('401 de guards → UNAUTHORIZED', () => {
-    expect(filter.toBody(new UnauthorizedException()).error).toBe('UNAUTHORIZED');
+    expect(filter.toBody(new UnauthorizedException()).error).toBe(
+      'UNAUTHORIZED',
+    );
   });
 
   it('429 del throttler → TOO_MANY_REQUESTS', () => {
-    const body = filter.toBody(new HttpException('Too Many', HttpStatus.TOO_MANY_REQUESTS));
+    const body = filter.toBody(
+      new HttpException('Too Many', HttpStatus.TOO_MANY_REQUESTS),
+    );
     expect(body.statusCode).toBe(429);
     expect(body.error).toBe('TOO_MANY_REQUESTS');
+  });
+
+  it('503 (health sin BD) → SERVICE_UNAVAILABLE, no 500', () => {
+    expect(filter.toBody(new ServiceUnavailableException())).toEqual({
+      statusCode: 503,
+      error: 'SERVICE_UNAVAILABLE',
+      message: 'Servicio no disponible',
+    });
   });
 
   it('ruta inexistente → 404 NOT_FOUND', () => {
@@ -83,6 +98,8 @@ describe('DomainExceptionFilter', () => {
     filter.catch(new OfferNotOpenError(), host as never);
 
     expect(status).toHaveBeenCalledWith(409);
-    expect(json).toHaveBeenCalledWith(expect.objectContaining({ error: 'OFFER_NOT_OPEN' }));
+    expect(json).toHaveBeenCalledWith(
+      expect.objectContaining({ error: 'OFFER_NOT_OPEN' }),
+    );
   });
 });

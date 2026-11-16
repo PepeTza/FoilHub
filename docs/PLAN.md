@@ -330,7 +330,7 @@ Se entrega en **dos PRs** para que B4 no espere a los casos de uso de auth.
 - Los casos de uso no importan nada fuera de `domain/` y `application/`.
 
 ### A4 · Persistencia con Prisma — *A* · depende de A2, A3a, B1
-- [ ] A4 completada
+- [x] A4 completada
 
 - Modelos de `docs/ARCHITECTURE.md` §5 en `schema.prisma`; primera migración `init` + migración con el índice único parcial (SQL manual).
 - `infrastructure/prisma/prisma.service.ts` (extiende el cliente generado, usa `@prisma/adapter-pg`, conecta en `onModuleInit`, desconecta al apagar).

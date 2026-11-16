@@ -8,6 +8,7 @@ import {
 import { useLocation, useNavigate } from 'react-router';
 import { getCurrentUser } from '../api/auth';
 import {
+  ApiError,
   UNAUTHORIZED_EVENT,
   clearStoredAuth,
   getStoredToken,
@@ -48,8 +49,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(summary);
         setContactInfo(me.contactInfo);
       })
-      .catch(() => {
-        // Si fue 401, apiFetch ya limpió el almacenamiento y disparó UNAUTHORIZED_EVENT.
+      .catch((err: unknown) => {
+        // Si fue 401, apiFetch ya limpió el almacenamiento. Si el usuario ya no existe en BD (404),
+        // invalidamos también la sesión local para evitar tokens huérfanos tras reiniciar la BD.
+        if (!cancelled && err instanceof ApiError && err.statusCode === 404) {
+          clearStoredAuth();
+          setToken(null);
+          setUser(null);
+          setContactInfo(null);
+        }
       })
       .finally(() => {
         if (!cancelled) {

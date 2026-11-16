@@ -11,6 +11,13 @@ const FALLBACK_ERROR_MESSAGES: Readonly<Record<string, string>> = {
   WEAK_PASSWORD: 'La contraseña debe tener entre 8 y 72 caracteres.',
   USERNAME_TAKEN: 'Ese nombre de usuario ya está en uso.',
   USER_NOT_FOUND: 'Usuario no encontrado.',
+  CARD_NOT_FOUND: 'No existe esa carta en el catálogo.',
+  INVALID_CARD_CODE: 'El código de carta no es válido (ej. BT1-084).',
+  INVALID_QUANTITY: 'La cantidad debe ser un entero entre 1 y 99.',
+  SAME_CARD_TRADE: 'No puedes ofrecer y pedir la misma carta.',
+  OFFER_NOT_FOUND: 'Oferta no encontrada.',
+  OFFER_NOT_OPEN: 'La oferta ya no está abierta.',
+  FORBIDDEN: 'No tienes permiso para realizar esta acción.',
   UNAUTHORIZED: 'Tu sesión expiró. Inicia sesión de nuevo.',
   TOO_MANY_REQUESTS:
     'Demasiadas peticiones seguidas. Espera un momento e intenta de nuevo.',

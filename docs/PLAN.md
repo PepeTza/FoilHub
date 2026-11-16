@@ -436,7 +436,7 @@ Juntos: `scripts/build-push.sh v0.1.0`, deploy en Swarm local, registrarse e ini
 - `contacts` es `null` para propuestas no aceptadas y para usuarios que no son parte.
 
 ### B7 · Frontend: ofertas — *B* · depende de A6, B2b (puede empezar antes con datos simulados usando los tipos del contrato)
-- [ ] B7 completada
+- [x] B7 completada
 
 - Si A6 todavía no está en `main`: las llamadas viven en `src/api/offers.ts` y devuelven fixtures tipados con `types.ts`. Al mergear A6 solo cambia la implementación de esas funciones, no las pantallas.
 - Buscador de cartas con autocompletado (`GET /api/cards?search=`), con imagen y código.

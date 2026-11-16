@@ -256,7 +256,7 @@ Si los patrones `**/x/**` no detectan rutas relativas como `../../infrastructure
 - `types.ts` coincide con §6 (la persona A lo revisa en el PR).
 
 ### B2b · Sistema visual — *B* · depende de B2
-- [ ] B2b completada
+- [x] B2b completada
 
 Objetivo: que todas las pantallas se vean como una sola app y que Claude Code no improvise estilos en cada página.
 

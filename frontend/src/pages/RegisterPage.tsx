@@ -1,8 +1,14 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router';
-import { validateContactInfo, validatePassword, validateUsername } from '../auth/validation';
+import {
+  validateContactInfo,
+  validatePassword,
+  validateUsername,
+} from '../auth/validation';
+import { Button, TextField, useToast } from '../components/ui';
 
 export function RegisterPage() {
+  const { showToast } = useToast();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [contactInfo, setContactInfo] = useState('');
@@ -11,7 +17,6 @@ export function RegisterPage() {
     password?: string;
     contactInfo?: string;
   }>({});
-  const [notice, setNotice] = useState<string | null>(null);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -25,92 +30,79 @@ export function RegisterPage() {
         password: passwordError ?? undefined,
         contactInfo: contactError ?? undefined,
       });
-      setNotice(null);
       return;
     }
 
     setErrors({});
-    setNotice(
-      'Validación correcta. La conexión con POST /api/auth/register se habilita en la tarea B6.',
-    );
+    showToast({
+      variant: 'info',
+      title: 'Validación correcta',
+      description:
+        'La conexión con POST /api/auth/register se habilita en la tarea B6.',
+    });
   }
 
   return (
-    <section className="form-card">
-      <h1>Crear cuenta</h1>
+    <div className="mx-auto w-full max-w-md">
+      <section className="rounded-xl border border-border-subtle bg-surface-1 p-6 shadow-card">
+        <header className="mb-6">
+          <h1 className="font-display text-2xl font-bold text-text-primary">
+            Crear cuenta
+          </h1>
+          <p className="mt-1 text-sm text-text-secondary">
+            Únete para intercambiar cartas del Digimon Card Game.
+          </p>
+        </header>
 
-      {notice && (
-        <p className="form-notice" role="status">
-          {notice}
-        </p>
-      )}
-
-      <form onSubmit={handleSubmit} noValidate>
-        <div className="form-field">
-          <label htmlFor="register-username">Nombre de usuario</label>
-          <input
-            id="register-username"
+        <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
+          <TextField
+            label="Nombre de usuario"
             name="username"
-            type="text"
-            className="form-input"
             autoComplete="username"
+            placeholder="ej. matt_ishida"
+            helperText="Entre 3 y 20 caracteres: letras, números o guion bajo."
             value={username}
+            error={errors.username}
             onChange={(event) => setUsername(event.target.value)}
-            aria-invalid={Boolean(errors.username)}
           />
-          {errors.username && (
-            <p className="form-error" role="alert">
-              {errors.username}
-            </p>
-          )}
-        </div>
 
-        <div className="form-field">
-          <label htmlFor="register-password">Contraseña</label>
-          <input
-            id="register-password"
+          <TextField
+            label="Contraseña"
             name="password"
             type="password"
-            className="form-input"
             autoComplete="new-password"
+            placeholder="Entre 8 y 72 caracteres"
             value={password}
+            error={errors.password}
             onChange={(event) => setPassword(event.target.value)}
-            aria-invalid={Boolean(errors.password)}
           />
-          {errors.password && (
-            <p className="form-error" role="alert">
-              {errors.password}
-            </p>
-          )}
-        </div>
 
-        <div className="form-field">
-          <label htmlFor="register-contact">Contacto (opcional: Discord, WhatsApp o email)</label>
-          <input
-            id="register-contact"
+          <TextField
+            label="Contacto (opcional)"
             name="contactInfo"
-            type="text"
-            className="form-input"
             maxLength={100}
+            placeholder="Discord, WhatsApp o email"
+            helperText="Solo se muestra a la otra persona cuando aceptas o te aceptan un trade."
             value={contactInfo}
+            error={errors.contactInfo}
             onChange={(event) => setContactInfo(event.target.value)}
-            aria-invalid={Boolean(errors.contactInfo)}
           />
-          {errors.contactInfo && (
-            <p className="form-error" role="alert">
-              {errors.contactInfo}
-            </p>
-          )}
-        </div>
 
-        <button type="submit" className="btn">
-          Registrarse
-        </button>
-      </form>
+          <Button type="submit" fullWidth className="mt-1">
+            Registrarse
+          </Button>
+        </form>
 
-      <p>
-        ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
-      </p>
-    </section>
+        <p className="mt-5 text-center text-sm text-text-secondary">
+          ¿Ya tienes cuenta?{' '}
+          <Link
+            to="/login"
+            className="font-medium text-foil-cyan underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foil-cyan"
+          >
+            Inicia sesión
+          </Link>
+        </p>
+      </section>
+    </div>
   );
 }

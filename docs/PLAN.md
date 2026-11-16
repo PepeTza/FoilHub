@@ -310,7 +310,7 @@ Objetivo: que todas las pantallas se vean como una sola app y que Claude Code no
 Se entrega en **dos PRs** para que B4 no espere a los casos de uso de auth.
 
 #### A3a · Puertos, tokens y fakes (PR pequeño, ~½ día; es lo primero que hace A en la fase 2)
-- [ ] A3a completada
+- [x] A3a completada
 
 - **Todos** los puertos de `docs/ARCHITECTURE.md` §4 en `application/ports/` (también los de cartas), con el tipo `Page<T>`.
 - `interface-adapters/di-tokens.ts` con **todos** los tokens: repositorios (incluido `CARD_REPOSITORY`), `UNIT_OF_WORK`, `PASSWORD_HASHER`, `TOKEN_SERVICE`, `CARD_CATALOG_PROVIDER`, `ID_GENERATOR`, `CLOCK`. B no edita este archivo.

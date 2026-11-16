@@ -42,7 +42,7 @@ export class PrismaTradeOfferRepository implements TradeOfferRepository {
       this.db.tradeOffer.count({ where }),
     ]);
     return {
-      items: rows.map(TradeOfferMapper.toDomain),
+      items: rows.map((row) => TradeOfferMapper.toDomain(row)),
       page: q.page,
       pageSize: q.pageSize,
       total,
@@ -57,7 +57,7 @@ export class PrismaTradeOfferRepository implements TradeOfferRepository {
       where: { ownerId, status },
       orderBy: NEWEST_FIRST,
     });
-    return rows.map(TradeOfferMapper.toDomain);
+    return rows.map((row) => TradeOfferMapper.toDomain(row));
   }
 
   async findMatchCandidates(offer: TradeOffer): Promise<TradeOffer[]> {
@@ -70,7 +70,7 @@ export class PrismaTradeOfferRepository implements TradeOfferRepository {
       },
       orderBy: NEWEST_FIRST,
     });
-    return rows.map(TradeOfferMapper.toDomain);
+    return rows.map((row) => TradeOfferMapper.toDomain(row));
   }
 
   async save(offer: TradeOffer): Promise<void> {

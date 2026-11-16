@@ -20,7 +20,7 @@ export class PrismaTradeProposalRepository implements TradeProposalRepository {
       where: { offerId, status: 'PENDING' },
       orderBy: { createdAt: 'asc' },
     });
-    return rows.map(TradeProposalMapper.toDomain);
+    return rows.map((row) => TradeProposalMapper.toDomain(row));
   }
 
   async existsPending(offerId: string, proposerId: string): Promise<boolean> {
@@ -40,7 +40,7 @@ export class PrismaTradeProposalRepository implements TradeProposalRepository {
       },
       orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
     });
-    return rows.map(TradeProposalMapper.toDomain);
+    return rows.map((row) => TradeProposalMapper.toDomain(row));
   }
 
   async save(proposal: TradeProposal): Promise<void> {

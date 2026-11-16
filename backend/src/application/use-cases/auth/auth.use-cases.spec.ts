@@ -108,6 +108,7 @@ describe('LoginUserUseCase', () => {
       login.execute({ username: 'ANA', password: 'secreta123' }),
     ).resolves.toEqual({
       accessToken: 'token:user-1:ana',
+      expiresIn: 3600,
       user: { id: 'user-1', username: 'ana' },
     });
   });

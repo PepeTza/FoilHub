@@ -12,6 +12,8 @@ export interface LoginUserInput {
 
 export interface LoginUserOutput {
   accessToken: string;
+  /** Segundos. */
+  expiresIn: number;
   user: UserSummary;
 }
 
@@ -39,6 +41,7 @@ export class LoginUserUseCase {
     });
     return {
       accessToken,
+      expiresIn: this.tokens.expiresInSeconds,
       user: { id: user.id, username: user.username.value },
     };
   }

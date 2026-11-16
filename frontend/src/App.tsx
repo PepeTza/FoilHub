@@ -15,8 +15,8 @@ import { UiCatalogPage } from './pages/dev/UiCatalogPage';
 export function App() {
   return (
     <ToastProvider>
-      <AuthProvider>
-        <BrowserRouter>
+      <BrowserRouter>
+        <AuthProvider>
           <Routes>
             <Route element={<Layout />}>
               <Route path="/" element={<ExplorePage />} />
@@ -34,8 +34,8 @@ export function App() {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
           </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </ToastProvider>
   );
 }

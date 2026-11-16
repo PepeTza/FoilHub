@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { NavLink, Outlet } from 'react-router';
+import { NavLink, Outlet, useNavigate } from 'react-router';
 import { useAuth } from '../auth/useAuth';
-import { Button } from './ui/Button';
+import { Button, useToast } from './ui';
 
 const NAV_LINKS = [
   { to: '/', label: 'Explorar', end: true },
@@ -12,8 +12,17 @@ const NAV_LINKS = [
 
 export function Layout() {
   const { isAuthenticated, user, logout } = useAuth();
+  const { showToast } = useToast();
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const appVersion = import.meta.env.VITE_APP_VERSION ?? 'dev';
+
+  function handleLogout() {
+    logout();
+    setMenuOpen(false);
+    showToast({ variant: 'info', title: 'Sesión cerrada' });
+    void navigate('/login');
+  }
 
   const linkClasses = ({ isActive }: { isActive: boolean }) =>
     `block rounded-md px-3 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foil-cyan ${
@@ -62,7 +71,7 @@ export function Layout() {
                 <span className="rounded-md border border-border-subtle bg-surface-2 px-2.5 py-1 text-sm font-medium text-text-primary">
                   @{user.username}
                 </span>
-                <Button variant="secondary" size="sm" onClick={logout}>
+                <Button variant="secondary" size="sm" onClick={handleLogout}>
                   Cerrar sesión
                 </Button>
               </>
@@ -132,10 +141,7 @@ export function Layout() {
                   <Button
                     variant="secondary"
                     size="sm"
-                    onClick={() => {
-                      logout();
-                      setMenuOpen(false);
-                    }}
+                    onClick={handleLogout}
                   >
                     Cerrar sesión
                   </Button>

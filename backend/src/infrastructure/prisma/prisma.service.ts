@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../../generated/prisma/client.js';
+import { resolveDatabaseUrl } from '../config/database-url.js';
 
 @Injectable()
 export class PrismaService
@@ -12,13 +13,9 @@ export class PrismaService
   implements OnModuleInit, OnModuleDestroy
 {
   constructor() {
-    const connectionString = process.env.DATABASE_URL;
-    if (!connectionString) {
-      throw new Error(
-        'Falta DATABASE_URL (en Docker la arma docker/entrypoint.sh)',
-      );
-    }
-    super({ adapter: new PrismaPg({ connectionString }) });
+    super({
+      adapter: new PrismaPg({ connectionString: resolveDatabaseUrl() }),
+    });
   }
 
   async onModuleInit(): Promise<void> {

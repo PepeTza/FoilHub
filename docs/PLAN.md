@@ -210,7 +210,7 @@ Si los patrones `**/x/**` no detectan rutas relativas como `../../infrastructure
 - `npm ls prisma @prisma/client` muestra versiones 7.x.
 
 ### A2 · Capa de dominio — *A* · depende de A1
-- [ ] A2 completada
+- [x] A2 completada
 
 - Value objects: `Username`, `CardCode`, `Quantity`, `PlainPassword` (§3).
 - Entidades: `User`, `Card`, `TradeOffer`, `TradeProposal` con `create()`/`restore()` y sus métodos de transición.

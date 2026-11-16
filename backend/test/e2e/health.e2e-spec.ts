@@ -8,7 +8,9 @@ describe('Health (e2e)', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
+    const moduleRef = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
     app = configureApp(moduleRef.createNestApplication());
     await app.init();
   });

@@ -321,7 +321,7 @@ Se entrega en **dos PRs** para que B4 no espere a los casos de uso de auth.
 - Los puertos no importan nada fuera de `domain/` y `application/`.
 
 #### A3b · Casos de uso de auth — depende de A3a
-- [ ] A3b completada
+- [x] A3b completada
 
 - `RegisterUserUseCase`, `LoginUserUseCase`, `GetCurrentUserUseCase`.
 

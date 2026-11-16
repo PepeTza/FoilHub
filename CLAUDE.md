@@ -97,7 +97,7 @@ foilhub/
 8. Los casos de uso reciben y devuelven **tipos planos**. Las entidades no salen de la capa 2: los presenters de la capa 3 construyen los DTOs de respuesta del contrato.
 9. Los errores de negocio son subclases de `DomainError` con un `code`. `DomainExceptionFilter` (capa 3) los traduce a HTTP según la tabla de `docs/ARCHITECTURE.md` §3. No lances `HttpException` desde el dominio ni desde los casos de uso.
 10. Mappers Prisma ↔ dominio en `interface-adapters/persistence/mappers/`. Los tipos de Prisma nunca llegan a `application/`.
-11. ESLint con `no-restricted-imports` hace cumplir 2 y 3. Si `npm run lint` falla por una importación prohibida, corrige el diseño; **no** desactives la regla.
+11. oxlint (el linter que genera Nest 12, config en `backend/.oxlintrc.json`) con `no-restricted-imports` y `no-restricted-globals` hace cumplir 2 y 3. Si `npm run lint` falla por una importación prohibida, corrige el diseño; **no** desactives la regla.
 
 ## Convenciones de código
 
@@ -124,7 +124,7 @@ foilhub/
 - **Dominio:** tests unitarios sin mocks ni base de datos. Cada invariante y cada transición de estado tiene al menos un test (caso válido y caso inválido).
 - **Casos de uso:** con los fakes en memoria de `backend/test/fakes/`. No uses Prisma ni Nest en estos tests.
 - **e2e:** levantan la app Nest contra el Postgres de `docker-compose.yml` (base `foilhub_test`) y prueban con `supertest`.
-- Usa el runner que generó `nest new` en la tarea A1; no mezcles Jest y Vitest.
+- El runner es **Vitest** (lo generó `nest new` en A1): `vi.fn()`, no `jest.fn()`. No mezcles Jest y Vitest.
 - Una tarea no está terminada si `npm run lint`, `npm run build` o `npm test` fallan.
 
 ## Comandos

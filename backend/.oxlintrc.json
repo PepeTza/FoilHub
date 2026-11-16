@@ -1,0 +1,71 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "ignorePatterns": ["src/generated/**", "dist/**", "coverage/**"],
+  "rules": {
+    "typescript/no-explicit-any": "error",
+    "typescript/no-floating-promises": "error",
+    "no-console": "error"
+  },
+  "env": {
+    "node": true
+  },
+  "overrides": [
+    {
+      "files": ["src/domain/**/*.ts"],
+      "rules": {
+        "no-restricted-globals": ["error", "process", "fetch"],
+        "no-restricted-imports": ["error", {
+          "patterns": [
+            {
+              "group": ["@nestjs/*", "@prisma/*", "class-validator", "class-transformer", "bcryptjs", "jsonwebtoken", "pg", "fs", "node:*"],
+              "message": "domain/ es TypeScript puro."
+            },
+            {
+              "regex": "(^|/)generated(/|$)",
+              "message": "domain/ es TypeScript puro: los tipos de Prisma no entran aquí."
+            },
+            {
+              "regex": "(^|/)(application|interface-adapters|infrastructure)(/|$)",
+              "message": "domain/ no depende de capas externas."
+            }
+          ]
+        }]
+      }
+    },
+    {
+      "files": ["src/application/**/*.ts"],
+      "rules": {
+        "no-restricted-globals": ["error", "process", "fetch"],
+        "no-restricted-imports": ["error", {
+          "patterns": [
+            {
+              "group": ["@nestjs/*", "@prisma/*", "class-validator", "class-transformer", "bcryptjs", "jsonwebtoken", "pg", "fs", "node:*"],
+              "message": "application/ es TypeScript puro."
+            },
+            {
+              "regex": "(^|/)generated(/|$)",
+              "message": "application/ es TypeScript puro: los tipos de Prisma no entran aquí."
+            },
+            {
+              "regex": "(^|/)(interface-adapters|infrastructure)(/|$)",
+              "message": "application/ solo depende de domain/."
+            }
+          ]
+        }]
+      }
+    },
+    {
+      "files": ["src/interface-adapters/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": ["error", {
+          "patterns": [
+            {
+              "regex": "(^|/)infrastructure(/|$)",
+              "message": "interface-adapters/ no depende de infrastructure/."
+            }
+          ]
+        }]
+      }
+    }
+  ]
+}

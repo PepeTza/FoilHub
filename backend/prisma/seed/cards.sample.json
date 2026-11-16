@@ -1,0 +1,389 @@
+[
+  {
+    "code": "ST1-01",
+    "name": "Koromon",
+    "setName": "Starter Deck Gaia Red [ST-01]",
+    "rarity": "U",
+    "color": "Red",
+    "cardType": "Digi-Egg",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST1-01.jpg"
+  },
+  {
+    "code": "ST1-02",
+    "name": "Biyomon",
+    "setName": "Starter Deck Gaia Red [ST-01]",
+    "rarity": "C",
+    "color": "Red",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST1-02.jpg"
+  },
+  {
+    "code": "ST1-03",
+    "name": "Agumon",
+    "setName": "Starter Deck Gaia Red [ST-01]",
+    "rarity": "U",
+    "color": "Red",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST1-03.jpg"
+  },
+  {
+    "code": "ST1-04",
+    "name": "Dracomon",
+    "setName": "Starter Deck Gaia Red [ST-01]",
+    "rarity": "C",
+    "color": "Red",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST1-04.jpg"
+  },
+  {
+    "code": "ST1-05",
+    "name": "Birdramon",
+    "setName": "Starter Deck Gaia Red [ST-01]",
+    "rarity": "C",
+    "color": "Red",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST1-05.jpg"
+  },
+  {
+    "code": "ST1-06",
+    "name": "Coredramon",
+    "setName": "Starter Deck Gaia Red [ST-01]",
+    "rarity": "C",
+    "color": "Red",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST1-06.jpg"
+  },
+  {
+    "code": "ST1-07",
+    "name": "Greymon",
+    "setName": "Starter Deck Gaia Red [ST-01]",
+    "rarity": "U",
+    "color": "Red",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST1-07.jpg"
+  },
+  {
+    "code": "ST1-08",
+    "name": "Garudamon",
+    "setName": "Starter Deck Gaia Red [ST-01]",
+    "rarity": "U",
+    "color": "Red",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST1-08.jpg"
+  },
+  {
+    "code": "ST1-09",
+    "name": "MetalGreymon",
+    "setName": "Starter Deck Gaia Red [ST-01]",
+    "rarity": "R",
+    "color": "Red",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST1-09.jpg"
+  },
+  {
+    "code": "ST1-10",
+    "name": "Phoenixmon",
+    "setName": "Starter Deck Gaia Red [ST-01]",
+    "rarity": "R",
+    "color": "Red",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST1-10.jpg"
+  },
+  {
+    "code": "ST1-11",
+    "name": "WarGreymon",
+    "setName": "Starter Deck Gaia Red [ST-01]",
+    "rarity": "SR",
+    "color": "Red",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST1-11.jpg"
+  },
+  {
+    "code": "ST1-12",
+    "name": "Tai Kamiya",
+    "setName": "Starter Deck Gaia Red [ST-01]",
+    "rarity": "R",
+    "color": "Red",
+    "cardType": "Tamer",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST1-12.jpg"
+  },
+  {
+    "code": "ST1-16",
+    "name": "Gaia Force",
+    "setName": "Starter Deck Gaia Red [ST-01]",
+    "rarity": "U",
+    "color": "Red",
+    "cardType": "Option",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST1-16.jpg"
+  },
+  {
+    "code": "ST2-01",
+    "name": "Tsunomon",
+    "setName": "Starter Deck Cocytus Blue [ST-02]",
+    "rarity": "U",
+    "color": "Blue",
+    "cardType": "Digi-Egg",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST2-01.jpg"
+  },
+  {
+    "code": "ST2-02",
+    "name": "Gomamon",
+    "setName": "Starter Deck Cocytus Blue [ST-02]",
+    "rarity": "C",
+    "color": "Blue",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST2-02.jpg"
+  },
+  {
+    "code": "ST2-03",
+    "name": "Gabumon",
+    "setName": "Starter Deck Cocytus Blue [ST-02]",
+    "rarity": "U",
+    "color": "Blue",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST2-03.jpg"
+  },
+  {
+    "code": "ST2-04",
+    "name": "Bearmon",
+    "setName": "Starter Deck Cocytus Blue [ST-02]",
+    "rarity": "C",
+    "color": "Blue",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST2-04.jpg"
+  },
+  {
+    "code": "ST2-05",
+    "name": "Ikkakumon",
+    "setName": "Starter Deck Cocytus Blue [ST-02]",
+    "rarity": "C",
+    "color": "Blue",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST2-05.jpg"
+  },
+  {
+    "code": "ST2-06",
+    "name": "Garurumon",
+    "setName": "Starter Deck Cocytus Blue [ST-02]",
+    "rarity": "U",
+    "color": "Blue",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST2-06.jpg"
+  },
+  {
+    "code": "ST2-07",
+    "name": "Grizzlymon",
+    "setName": "Starter Deck Cocytus Blue [ST-02]",
+    "rarity": "C",
+    "color": "Blue",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST2-07.jpg"
+  },
+  {
+    "code": "ST2-08",
+    "name": "WereGarurumon",
+    "setName": "Starter Deck Cocytus Blue [ST-02]",
+    "rarity": "R",
+    "color": "Blue",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST2-08.jpg"
+  },
+  {
+    "code": "ST2-09",
+    "name": "Zudomon",
+    "setName": "Starter Deck Cocytus Blue [ST-02]",
+    "rarity": "U",
+    "color": "Blue",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST2-09.jpg"
+  },
+  {
+    "code": "ST2-10",
+    "name": "Plesiomon",
+    "setName": "Starter Deck Cocytus Blue [ST-02]",
+    "rarity": "R",
+    "color": "Blue",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST2-10.jpg"
+  },
+  {
+    "code": "ST2-11",
+    "name": "MetalGarurumon",
+    "setName": "Starter Deck Cocytus Blue [ST-02]",
+    "rarity": "SR",
+    "color": "Blue",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST2-11.jpg"
+  },
+  {
+    "code": "ST2-12",
+    "name": "Matt Ishida",
+    "setName": "Starter Deck Cocytus Blue [ST-02]",
+    "rarity": "R",
+    "color": "Blue",
+    "cardType": "Tamer",
+    "imageUrl": "https://images.digimoncard.io/images/cards/ST2-12.jpg"
+  },
+  {
+    "code": "BT1-001",
+    "name": "Yokomon",
+    "setName": "Release Special Booster Ver.1.0 [BT01-03]",
+    "rarity": "U",
+    "color": "Red",
+    "cardType": "Digi-Egg",
+    "imageUrl": "https://images.digimoncard.io/images/cards/BT1-001.jpg"
+  },
+  {
+    "code": "BT1-010",
+    "name": "Agumon",
+    "setName": "Release Special Booster Ver.1.0 [BT01-03]",
+    "rarity": "R",
+    "color": "Red",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/BT1-010.jpg"
+  },
+  {
+    "code": "BT1-015",
+    "name": "Greymon",
+    "setName": "Release Special Booster Ver.1.0 [BT01-03]",
+    "rarity": "U",
+    "color": "Red",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/BT1-015.jpg"
+  },
+  {
+    "code": "BT1-025",
+    "name": "WarGreymon",
+    "setName": "Release Special Booster Ver.1.0 [BT01-03]",
+    "rarity": "SR",
+    "color": "Red",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/BT1-025.jpg"
+  },
+  {
+    "code": "BT1-029",
+    "name": "Gabumon",
+    "setName": "Release Special Booster Ver.1.0 [BT01-03]",
+    "rarity": "R",
+    "color": "Blue",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/BT1-029.jpg"
+  },
+  {
+    "code": "BT1-044",
+    "name": "MetalGarurumon",
+    "setName": "Release Special Booster Ver.1.0 [BT01-03]",
+    "rarity": "SR",
+    "color": "Blue",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/BT1-044.jpg"
+  },
+  {
+    "code": "BT1-048",
+    "name": "Patamon",
+    "setName": "Release Special Booster Ver.1.0 [BT01-03]",
+    "rarity": "R",
+    "color": "Yellow",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/BT1-048.jpg"
+  },
+  {
+    "code": "BT1-060",
+    "name": "MagnaAngemon",
+    "setName": "Release Special Booster Ver.1.0 [BT01-03]",
+    "rarity": "SR",
+    "color": "Yellow",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/BT1-060.jpg"
+  },
+  {
+    "code": "BT1-067",
+    "name": "Palmon",
+    "setName": "Release Special Booster Ver.1.0 [BT01-03]",
+    "rarity": "C",
+    "color": "Green",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/BT1-067.jpg"
+  },
+  {
+    "code": "BT1-084",
+    "name": "Omnimon",
+    "setName": "Release Special Booster Ver.1.0 [BT01-03]",
+    "rarity": "SR",
+    "color": "White",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/BT1-084.jpg"
+  },
+  {
+    "code": "BT1-085",
+    "name": "Tai Kamiya",
+    "setName": "Release Special Booster Ver.1.0 [BT01-03]",
+    "rarity": "R",
+    "color": "Red",
+    "cardType": "Tamer",
+    "imageUrl": "https://images.digimoncard.io/images/cards/BT1-085.jpg"
+  },
+  {
+    "code": "BT2-021",
+    "name": "Veemon",
+    "setName": "Release Special Booster Ver.1.0 [BT01-03]",
+    "rarity": "C",
+    "color": "Blue",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/BT2-021.jpg"
+  },
+  {
+    "code": "BT2-032",
+    "name": "UlforceVeedramon",
+    "setName": "Release Special Booster Ver.1.0 [BT01-03]",
+    "rarity": "SR",
+    "color": "Blue",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/BT2-032.jpg"
+  },
+  {
+    "code": "BT2-047",
+    "name": "Argomon",
+    "setName": "Release Special Booster Ver.1.0 [BT01-03]",
+    "rarity": "U",
+    "color": "Green",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/BT2-047.jpg"
+  },
+  {
+    "code": "BT2-068",
+    "name": "Impmon",
+    "setName": "Release Special Booster Ver.1.0 [BT01-03]",
+    "rarity": "C",
+    "color": "Purple",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/BT2-068.jpg"
+  },
+  {
+    "code": "BT2-083",
+    "name": "Piedmon",
+    "setName": "Release Special Booster Ver.1.0 [BT01-03]",
+    "rarity": "SR",
+    "color": "Purple",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/BT2-083.jpg"
+  },
+  {
+    "code": "BT2-111",
+    "name": "Beelzemon",
+    "setName": "Release Special Booster Ver.1.5 [BT01-03]",
+    "rarity": "SEC",
+    "color": "Purple",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/BT2-111.jpg"
+  },
+  {
+    "code": "BT2-112",
+    "name": "Millenniummon",
+    "setName": "Release Special Booster Ver.1.5 [BT01-03]",
+    "rarity": "SEC",
+    "color": "Black",
+    "cardType": "Digimon",
+    "imageUrl": "https://images.digimoncard.io/images/cards/BT2-112.jpg"
+  }
+]

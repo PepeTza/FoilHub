@@ -10,7 +10,7 @@ import type {
 import { ConcurrencyConflictError } from '../../../domain/errors/domain-errors.js';
 import type { Prisma } from '../../../generated/prisma/client.js';
 import { TradeOfferMapper } from '../mappers/trade-offer.mapper.js';
-import type { PrismaDb } from '../prisma-db.js';
+import { isUuid, type PrismaDb } from '../prisma-db.js';
 
 const NEWEST_FIRST = [
   { createdAt: 'desc' },
@@ -21,6 +21,9 @@ export class PrismaTradeOfferRepository implements TradeOfferRepository {
   constructor(private readonly db: PrismaDb) {}
 
   async findById(id: string): Promise<TradeOffer | null> {
+    if (!isUuid(id)) {
+      return null;
+    }
     const row = await this.db.tradeOffer.findUnique({ where: { id } });
     return row ? TradeOfferMapper.toDomain(row) : null;
   }

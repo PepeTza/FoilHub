@@ -360,7 +360,7 @@ Se entrega en **dos PRs** para que B4 no espere a los casos de uso de auth.
 - Las respuestas siguen exactamente el contrato de §6.
 
 ### B4 · Catálogo de cartas — *B* · depende de A3a, A4
-- [ ] B4 completada
+- [x] B4 completada
 
 - Casos de uso: `SearchCardsUseCase`, `GetCardByCodeUseCase`, `ImportCardCatalogUseCase` (upsert por `code`; omite y cuenta las cartas con código inválido).
 - Capa 3: `PrismaCardRepository` + mapper; `CardsController` (`GET /api/cards`, `GET /api/cards/:code`); presenter `CardDto`.

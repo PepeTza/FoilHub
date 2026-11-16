@@ -413,7 +413,7 @@ Juntos: `scripts/build-push.sh v0.1.0`, deploy en Swarm local, registrarse e ini
 ## Fase 3 — Ofertas y propuestas (días 10–14)
 
 ### A6 · Ofertas — *A* · depende de A5, B4
-- [ ] A6 completada
+- [x] A6 completada
 
 - Casos de uso de ofertas de `docs/ARCHITECTURE.md` §4: crear, listar abiertas, listar mías, detalle, cancelar (con auto-rechazo de propuestas en `UnitOfWork`), buscar matches.
 - `OffersController` con los endpoints de §6; `OfferPresenter` (necesita cartas y dueño: cargarlos en lote, sin N+1).

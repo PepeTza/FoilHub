@@ -228,7 +228,7 @@ Si los patrones `**/x/**` no detectan rutas relativas como `../../infrastructure
 - Ningún archivo de `domain/` importa algo de fuera de `domain/` (lint en verde).
 
 ### B1 · Docker Compose para desarrollo — *B* · depende de T0
-- [ ] B1 completada
+- [x] B1 completada
 
 - `docker-compose.yml` en la raíz: servicio `db` (`postgres:17-alpine`, puerto `5432:5432`, usuario/clave `foilhub`/`foilhub_dev`, volumen con nombre) con healthcheck `pg_isready`.
 - Script de inicialización en `docker/postgres-init/01-create-test-db.sql` (montado en `/docker-entrypoint-initdb.d` con `:z`) que crea la base `foilhub_test`.
@@ -240,7 +240,7 @@ Si los patrones `**/x/**` no detectan rutas relativas como `../../infrastructure
 - Funciona en Fedora con SELinux activado (sin errores de permisos).
 
 ### B2 · Scaffold del frontend — *B* · depende de T0
-- [ ] B2 completada
+- [x] B2 completada
 
 - `npm create vite@latest frontend -- --template react-ts`, agregar `react-router`.
 - Estructura de §8. Layout con navegación y páginas vacías de todas las pantallas.
@@ -286,7 +286,7 @@ Objetivo: que todas las pantallas se vean como una sola app y que Claude Code no
 - La persona A revisa `/_ui` en el PR y aprueba el look antes de que empiece B7.
 
 ### B3 · Imagen Docker de la API — *B* · depende de A1
-- [ ] B3 completada
+- [x] B3 completada
 
 - `backend/Dockerfile` multi-stage con `node:24-alpine`:
   1. `deps`: `npm ci`.

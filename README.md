@@ -21,12 +21,46 @@ Proyecto universitario: aplicación con **Clean Architecture** desplegada en **A
 
 ## Desarrollo local
 
-Requisitos (Fedora): Docker Engine con el plugin Compose, Node.js 24, Git.
+Requisitos (Fedora): Docker Engine con el plugin Compose (o Podman con `podman compose`), Node.js 24 (mínimo 22.22.3), Git.
+
+### 1. Base de datos local (PostgreSQL 17 + Adminer)
+
+Levanta el contenedor de PostgreSQL y verifica que se crearon las bases `foilhub` y `foilhub_test`:
 
 ```bash
-docker compose up -d                 # PostgreSQL local
-cd backend && npm install && npx prisma migrate dev && npm run start:dev
-cd frontend && npm install && npm run dev   # http://localhost:5173
+docker compose up -d
+docker compose exec db psql -U foilhub -l
 ```
 
-_(Estos comandos funcionan a medida que se completan las tareas del plan.)_
+Opcionalmente puedes inspeccionar la base de datos con Adminer en `http://localhost:8081`:
+- **Sistema:** PostgreSQL
+- **Servidor:** `db`
+- **Usuario:** `foilhub`
+- **Contraseña:** `foilhub_dev`
+- **Base de datos:** `foilhub`
+
+> Nota para Fedora con SELinux: el montaje en `./docker/postgres-init` ya incluye `:z` en `docker-compose.yml`.
+
+### 2. Backend (NestJS + Prisma 7)
+
+```bash
+cd backend
+cp .env.example .env
+npm install
+npx prisma migrate dev
+npm run start:dev
+```
+
+La API escucha en `http://localhost:3000` bajo el prefijo `/api` (healthcheck en `http://localhost:3000/api/health`).
+
+### 3. Frontend (React + Vite)
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+La aplicación queda disponible en `http://localhost:5173` (con proxy `/api` → `http://localhost:3000`).
+
+_(Algunas funciones se completan conforme avanzan las tareas del plan.)_

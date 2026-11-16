@@ -169,8 +169,8 @@ describe('GetCardByCodeUseCase', () => {
     await expect(getCardByCode.execute({ code: 'BT9-999' })).rejects.toThrow(
       CardNotFoundError,
     );
-    await expect(
-      getCardByCode.execute({ code: 'no-valido' }),
-    ).rejects.toThrow(CardNotFoundError);
+    await expect(getCardByCode.execute({ code: 'no-valido' })).rejects.toThrow(
+      CardNotFoundError,
+    );
   });
 });

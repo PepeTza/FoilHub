@@ -5,12 +5,15 @@ import type {
 import type { TradeProposal } from '../../../domain/entities/trade-proposal.entity.js';
 import { DuplicateProposalError } from '../../../domain/errors/domain-errors.js';
 import { TradeProposalMapper } from '../mappers/trade-proposal.mapper.js';
-import { isUniqueViolation, type PrismaDb } from '../prisma-db.js';
+import { isUniqueViolation, isUuid, type PrismaDb } from '../prisma-db.js';
 
 export class PrismaTradeProposalRepository implements TradeProposalRepository {
   constructor(private readonly db: PrismaDb) {}
 
   async findById(id: string): Promise<TradeProposal | null> {
+    if (!isUuid(id)) {
+      return null;
+    }
     const row = await this.db.tradeProposal.findUnique({ where: { id } });
     return row ? TradeProposalMapper.toDomain(row) : null;
   }

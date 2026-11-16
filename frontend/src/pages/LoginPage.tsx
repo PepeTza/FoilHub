@@ -1,12 +1,13 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router';
 import { validatePassword, validateUsername } from '../auth/validation';
+import { Button, TextField, useToast } from '../components/ui';
 
 export function LoginPage() {
+  const { showToast } = useToast();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ username?: string; password?: string }>({});
-  const [notice, setNotice] = useState<string | null>(null);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -18,73 +19,67 @@ export function LoginPage() {
         username: usernameError ?? undefined,
         password: passwordError ?? undefined,
       });
-      setNotice(null);
       return;
     }
 
     setErrors({});
-    setNotice(
-      'Validación correcta. La conexión con POST /api/auth/login se habilita en la tarea B6.',
-    );
+    showToast({
+      variant: 'info',
+      title: 'Validación correcta',
+      description:
+        'La conexión con POST /api/auth/login se habilita en la tarea B6.',
+    });
   }
 
   return (
-    <section className="form-card">
-      <h1>Iniciar sesión</h1>
+    <div className="mx-auto w-full max-w-md">
+      <section className="rounded-xl border border-border-subtle bg-surface-1 p-6 shadow-card">
+        <header className="mb-6">
+          <h1 className="font-display text-2xl font-bold text-text-primary">
+            Iniciar sesión
+          </h1>
+          <p className="mt-1 text-sm text-text-secondary">
+            Entra para publicar ofertas y proponer intercambios.
+          </p>
+        </header>
 
-      {notice && (
-        <p className="form-notice" role="status">
-          {notice}
-        </p>
-      )}
-
-      <form onSubmit={handleSubmit} noValidate>
-        <div className="form-field">
-          <label htmlFor="login-username">Nombre de usuario</label>
-          <input
-            id="login-username"
+        <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
+          <TextField
+            label="Nombre de usuario"
             name="username"
-            type="text"
-            className="form-input"
             autoComplete="username"
+            placeholder="ej. tai_kamiya"
             value={username}
+            error={errors.username}
             onChange={(event) => setUsername(event.target.value)}
-            aria-invalid={Boolean(errors.username)}
           />
-          {errors.username && (
-            <p className="form-error" role="alert">
-              {errors.username}
-            </p>
-          )}
-        </div>
 
-        <div className="form-field">
-          <label htmlFor="login-password">Contraseña</label>
-          <input
-            id="login-password"
+          <TextField
+            label="Contraseña"
             name="password"
             type="password"
-            className="form-input"
             autoComplete="current-password"
+            placeholder="Mínimo 8 caracteres"
             value={password}
+            error={errors.password}
             onChange={(event) => setPassword(event.target.value)}
-            aria-invalid={Boolean(errors.password)}
           />
-          {errors.password && (
-            <p className="form-error" role="alert">
-              {errors.password}
-            </p>
-          )}
-        </div>
 
-        <button type="submit" className="btn">
-          Entrar
-        </button>
-      </form>
+          <Button type="submit" fullWidth className="mt-1">
+            Entrar
+          </Button>
+        </form>
 
-      <p>
-        ¿No tienes cuenta? <Link to="/register">Regístrate</Link>
-      </p>
-    </section>
+        <p className="mt-5 text-center text-sm text-text-secondary">
+          ¿No tienes cuenta?{' '}
+          <Link
+            to="/register"
+            className="font-medium text-foil-cyan underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foil-cyan"
+          >
+            Regístrate
+          </Link>
+        </p>
+      </section>
+    </div>
   );
 }

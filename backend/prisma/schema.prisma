@@ -1,0 +1,11 @@
+// Modelos: tarea A4 (docs/ARCHITECTURE.md §5).
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}

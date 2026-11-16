@@ -48,7 +48,7 @@ Después:
 ### Consejos
 
 - Una tarea = una rama = una sesión. Usen `/clear` entre tareas para que el contexto no se mezcle.
-- Si Claude Code intenta instalar Prisma 8 (`@prisma/orm-postgres`, `contract.prisma`) o quitar una regla de ESLint para que pase el lint, deténganlo y recuérdenle `CLAUDE.md`.
+- Si Claude Code intenta instalar Prisma 8 (`@prisma/orm-postgres`, `contract.prisma`) o quitar una regla del linter (oxlint) para que pase el lint, deténganlo y recuérdenle `CLAUDE.md`.
 - Si una tarea necesita cambiar el contrato de la API, primero abran un PR pequeño que solo modifique `docs/ARCHITECTURE.md` §6, apruébenlo los dos y después sigan.
 - Para tareas grandes (A4, A7, B5), pídanle que trabaje por partes y que corra los tests al final de cada parte.
 
@@ -67,7 +67,7 @@ Después:
 | `backend/src/**/cards/**`, `cards.controller.ts`, `prisma-card.repository.ts`, `infrastructure/modules/cards.module.ts`, `infrastructure/external/**`, `infrastructure/cli/**` | B | revisa |
 | `backend/prisma/schema.prisma` y migraciones | A | pide cambios en el PR |
 | `backend/package.json`, `backend/package-lock.json` | A | B no ejecuta `npm install <pkg>` en `backend/`: lo pide en un PR de A |
-| `backend/eslint.config.mjs`, `backend/tsconfig*.json`, `backend/nest-cli.json`, `backend/.env.example` | A | revisa |
+| `backend/.oxlintrc.json`, `backend/tsconfig*.json`, `backend/nest-cli.json`, `backend/.env.example` | A | revisa |
 | `backend/test/fakes/**` | A, **excepto** `in-memory-card.repository.ts` (lo crea A en A3a y después es de B) | revisa |
 | `backend/test/e2e/` (configuración y helpers: levantar la app, limpiar `foilhub_test`) | A (lo crea en A4) | revisa |
 | `backend/test/e2e/cards*.e2e-spec.ts` | B | revisa |
@@ -167,13 +167,13 @@ Reunión diaria de 15 minutos: qué terminé, qué sigue, qué me bloquea. Los h
 ## Fase 1 — Cimientos (días 2–4)
 
 ### A1 · Scaffold del backend — *A* · depende de T0
-- [ ] A1 completada
+- [x] A1 completada
 
 - `nest new backend` (npm, ESM; si el scaffold en ESM da problemas con Prisma, usen CommonJS y actualicen la línea "Módulos" de `CLAUDE.md`).
 - Crear la estructura de carpetas por capa de `CLAUDE.md` (con `.gitkeep` donde estén vacías). Mover `main.ts` y el módulo raíz a `src/infrastructure/`.
 - Instalar Prisma **7** fijado: `npm i -D prisma@7` + `npm i @prisma/client@7 @prisma/adapter-pg@7 pg`. Crear `prisma.config.ts` y `prisma/schema.prisma` con solo `generator` y `datasource` (los modelos van en A4). Salida del cliente en `src/generated/prisma`.
   - `prisma` también debe quedar disponible en la imagen de producción para `migrate deploy` (B3 lo necesita).
-- ESLint con `no-restricted-imports` por capa (ver abajo).
+- Linter con `no-restricted-imports` por capa (ver abajo). *Nota de implementación: Nest 12 genera **oxlint** en vez de ESLint; la misma regla vive en `backend/.oxlintrc.json` (overrides por carpeta, `regex` para rutas relativas).*
 - `main.ts`: prefijo global `api`, `ValidationPipe` (`whitelist`, `forbidNonWhitelisted`, `transform`), `app.enableShutdownHooks()`, puerto desde `PORT` (por defecto 3000).
 - `domain/errors/domain-error.ts` (clase base con `code`) y `interface-adapters/http/filters/domain-exception.filter.ts` que aplica la tabla de §3 y el formato de error de §6 (registrado global).
 - `infrastructure/config/`: función `readSecret(name)` que devuelve el contenido de `process.env[name + '_FILE']` si existe, o `process.env[name]`; error claro si no hay ninguno.
@@ -529,7 +529,7 @@ Ensayar dos veces el guion de `docs/DEPLOY-AWS.md` (§ Guion de demo), cronometr
 - [ ] J3 completada
 
 Preparar respuestas cortas para:
-- ¿Dónde está la regla de dependencia y cómo la hacen cumplir? (ESLint + estructura + `useFactory`)
+- ¿Dónde está la regla de dependencia y cómo la hacen cumplir? (oxlint `no-restricted-imports` + estructura + `useFactory`)
 - ¿Qué pasa si se cae un nodo worker? ¿Y el manager? (1 manager = sin alta disponibilidad del plano de control; con 3 managers se tolera la caída de 1)
 - ¿Por qué la base de datos tiene una sola réplica y está fijada a un nodo?
 - ¿Cómo llegan los secretos a los contenedores y por qué no son variables de entorno?

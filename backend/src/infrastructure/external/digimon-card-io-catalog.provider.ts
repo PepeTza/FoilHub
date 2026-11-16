@@ -4,7 +4,7 @@ import type {
 } from '../../application/ports/card-catalog-provider.port.js';
 
 const DEFAULT_API_URL =
-  'https://digimoncard.io/api-public/search.php?series=Digimon%20Card%20Game';
+  'https://digimoncard.io/api-public/search?series=Digimon%20Card%20Game';
 
 export class DigimonCardIoCatalogProvider implements CardCatalogProvider {
   constructor(private readonly apiUrl: string = DEFAULT_API_URL) {}

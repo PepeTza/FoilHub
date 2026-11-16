@@ -1,4 +1,5 @@
-// Modelos: tarea A4 (docs/ARCHITECTURE.md §5).
+// Modelos de docs/ARCHITECTURE.md §5. Los ids los genera el dominio (IdGenerator):
+// por eso no hay @default(uuid()).
 
 generator client {
   provider     = "prisma-client"
@@ -8,4 +9,82 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+enum OfferStatus {
+  OPEN
+  COMPLETED
+  CANCELLED
+}
+
+enum ProposalStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+}
+
+model User {
+  id           String          @id @db.Uuid
+  username     String          @unique // siempre en minúsculas
+  passwordHash String          @map("password_hash")
+  contactInfo  String?         @map("contact_info") @db.VarChar(100)
+  createdAt    DateTime        @map("created_at")
+  offers       TradeOffer[]
+  proposals    TradeProposal[]
+
+  @@map("users")
+}
+
+model Card {
+  id       String       @id @db.Uuid
+  code     String       @unique
+  name     String
+  setName  String?      @map("set_name")
+  rarity   String?
+  color    String?
+  cardType String?      @map("card_type")
+  imageUrl String?      @map("image_url")
+  offered  TradeOffer[] @relation("OfferedCard")
+  wanted   TradeOffer[] @relation("WantedCard")
+
+  @@index([name])
+  @@map("cards")
+}
+
+model TradeOffer {
+  id              String          @id @db.Uuid
+  ownerId         String          @map("owner_id") @db.Uuid
+  offeredCardId   String          @map("offered_card_id") @db.Uuid
+  offeredQuantity Int             @map("offered_quantity")
+  wantedCardId    String          @map("wanted_card_id") @db.Uuid
+  wantedQuantity  Int             @map("wanted_quantity")
+  status          OfferStatus     @default(OPEN)
+  createdAt       DateTime        @map("created_at")
+  closedAt        DateTime?       @map("closed_at")
+  owner           User            @relation(fields: [ownerId], references: [id])
+  offeredCard     Card            @relation("OfferedCard", fields: [offeredCardId], references: [id])
+  wantedCard      Card            @relation("WantedCard", fields: [wantedCardId], references: [id])
+  proposals       TradeProposal[] @relation("ProposalOffer")
+  counterFor      TradeProposal[] @relation("ProposalCounterOffer")
+
+  @@index([status, offeredCardId, wantedCardId])
+  @@map("trade_offers")
+}
+
+model TradeProposal {
+  id             String         @id @db.Uuid
+  offerId        String         @map("offer_id") @db.Uuid
+  proposerId     String         @map("proposer_id") @db.Uuid
+  counterOfferId String?        @map("counter_offer_id") @db.Uuid
+  message        String?        @db.VarChar(280)
+  status         ProposalStatus @default(PENDING)
+  createdAt      DateTime       @map("created_at")
+  respondedAt    DateTime?      @map("responded_at")
+  offer          TradeOffer     @relation("ProposalOffer", fields: [offerId], references: [id])
+  counterOffer   TradeOffer?    @relation("ProposalCounterOffer", fields: [counterOfferId], references: [id])
+  proposer       User           @relation(fields: [proposerId], references: [id])
+
+  @@index([offerId, status])
+  @@map("trade_proposals")
 }

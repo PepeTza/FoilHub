@@ -17,6 +17,14 @@ const FALLBACK_ERROR_MESSAGES: Readonly<Record<string, string>> = {
   SAME_CARD_TRADE: 'No puedes ofrecer y pedir la misma carta.',
   OFFER_NOT_FOUND: 'Oferta no encontrada.',
   OFFER_NOT_OPEN: 'La oferta ya no está abierta.',
+  PROPOSAL_NOT_FOUND: 'Propuesta no encontrada.',
+  PROPOSAL_NOT_PENDING: 'La propuesta ya no está pendiente.',
+  DUPLICATE_PROPOSAL: 'Ya tienes una propuesta pendiente para esta oferta.',
+  CONCURRENCY_CONFLICT:
+    'Otra persona modificó esta oferta o propuesta al mismo tiempo. Recarga e intenta de nuevo.',
+  SELF_TRADE: 'No puedes proponer un trade sobre tu propia oferta.',
+  COUNTER_OFFER_NOT_MATCHING:
+    'Tu oferta vinculada no es la inversa exacta de esta oferta.',
   FORBIDDEN: 'No tienes permiso para realizar esta acción.',
   UNAUTHORIZED: 'Tu sesión expiró. Inicia sesión de nuevo.',
   TOO_MANY_REQUESTS:

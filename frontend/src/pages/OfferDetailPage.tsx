@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 import { getErrorMessage } from '../api/client';
 import { cancelOffer, getOffer, getOfferMatches } from '../api/offers';
 import type { OfferDto } from '../api/types';
@@ -14,9 +14,11 @@ import {
   useToast,
 } from '../components/ui';
 import { CancelOfferModal } from '../features/offers/CancelOfferModal';
+import { ProposeTradeModal } from '../features/proposals/ProposeTradeModal';
 
 export function OfferDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
   const { showToast } = useToast();
 
@@ -31,6 +33,7 @@ export function OfferDetailPage() {
 
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [cancelling, setCancelling] = useState(false);
+  const [proposeModalOpen, setProposeModalOpen] = useState(false);
 
   const reload = useCallback(() => {
     setReloadTick((prev) => prev + 1);
@@ -174,14 +177,7 @@ export function OfferDetailPage() {
                   <Button
                     variant="primary"
                     size="sm"
-                    onClick={() =>
-                      showToast({
-                        variant: 'info',
-                        title: 'Propuestas disponibles en B8',
-                        description:
-                          'El envío de propuestas sobre ofertas ajenas se habilita en la tarea B8.',
-                      })
-                    }
+                    onClick={() => setProposeModalOpen(true)}
                   >
                     Proponer trade
                   </Button>
@@ -248,6 +244,18 @@ export function OfferDetailPage() {
           void handleConfirmCancel();
         }}
       />
+
+      {offer && (
+        <ProposeTradeModal
+          open={proposeModalOpen}
+          offer={offer}
+          onClose={() => setProposeModalOpen(false)}
+          onSuccess={() => {
+            setProposeModalOpen(false);
+            void navigate('/proposals', { state: { box: 'sent' } });
+          }}
+        />
+      )}
     </section>
   );
 }

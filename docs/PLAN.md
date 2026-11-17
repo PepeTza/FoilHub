@@ -448,7 +448,7 @@ Juntos: `scripts/build-push.sh v0.1.0`, deploy en Swarm local, registrarse e ini
 - Las pantallas solo usan componentes de `components/ui/` y `components/trading/` y tokens del tema; `npm run check:styles` pasa. Se ven bien a 360 px.
 
 ### B8 · Frontend: propuestas — *B* · depende de A7 (puede empezar antes con fixtures en `src/api/proposals.ts`, igual que B7)
-- [ ] B8 completada
+- [x] B8 completada
 
 - En el detalle de una oferta ajena: "Proponer trade" con mensaje opcional y selector de "mi oferta que hace match" (de `GET /api/offers/:id/matches` sobre mis ofertas, o filtrando mis ofertas abiertas).
 - Página de propuestas con pestañas Recibidas/Enviadas; aceptar, rechazar, cancelar; al aceptar, mostrar el contacto de la otra persona.

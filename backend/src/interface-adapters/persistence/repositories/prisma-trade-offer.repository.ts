@@ -28,6 +28,17 @@ export class PrismaTradeOfferRepository implements TradeOfferRepository {
     return row ? TradeOfferMapper.toDomain(row) : null;
   }
 
+  async findByIds(ids: string[]): Promise<TradeOffer[]> {
+    const valid = ids.filter(isUuid);
+    if (valid.length === 0) {
+      return [];
+    }
+    const rows = await this.db.tradeOffer.findMany({
+      where: { id: { in: valid } },
+    });
+    return rows.map((row) => TradeOfferMapper.toDomain(row));
+  }
+
   async listOpen(q: ListOpenOffersQuery): Promise<Page<TradeOffer>> {
     const where: Prisma.TradeOfferWhereInput = {
       status: 'OPEN',

@@ -12,6 +12,7 @@ export interface ListOpenOffersQuery extends PageRequest {
 
 export interface TradeOfferRepository {
   findById(id: string): Promise<TradeOffer | null>;
+  findByIds(ids: string[]): Promise<TradeOffer[]>;
   listOpen(q: ListOpenOffersQuery): Promise<Page<TradeOffer>>;
   listByOwner(ownerId: string, status?: OfferStatus): Promise<TradeOffer[]>;
   /** Solo acota candidatos (OPEN, cartas invertidas, otro dueño); decide TradeMatcher. */

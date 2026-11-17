@@ -425,7 +425,7 @@ Juntos: `scripts/build-push.sh v0.1.0`, deploy en Swarm local, registrarse e ini
 - e2e de cada endpoint de ofertas (caso feliz + un error).
 
 ### A7 · Propuestas — *A* · depende de A6
-- [ ] A7 completada
+- [x] A7 completada
 
 - Casos de uso de propuestas de §4. `AcceptProposalUseCase` hace todo dentro de **una** transacción de `UnitOfWork`.
 - `ProposalsController` + `POST /api/offers/:id/proposals` (puede ir en `OffersController`); `ProposalPresenter` con `contacts` solo cuando corresponde.

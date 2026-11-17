@@ -189,3 +189,31 @@ describe('TradeProposal.autoReject', () => {
     );
   });
 });
+
+describe('TradeProposal.revealsContactsTo', () => {
+  // ana es dueña de la oferta, beto propone, carla no es parte.
+  it('ACCEPTED: el dueño y el proponente ven los contactos; un tercero no', () => {
+    const p = proposalIn('ACCEPTED');
+    const o = offer({ status: 'COMPLETED' });
+
+    expect(p.revealsContactsTo('ana', o)).toBe(true);
+    expect(p.revealsContactsTo('beto', o)).toBe(true);
+    expect(p.revealsContactsTo('carla', o)).toBe(false);
+  });
+
+  it.each(['PENDING', 'REJECTED', 'CANCELLED'] as const)(
+    '%s: nadie ve los contactos',
+    (status) => {
+      const p = proposalIn(status);
+
+      expect(p.revealsContactsTo('ana', offer())).toBe(false);
+      expect(p.revealsContactsTo('beto', offer())).toBe(false);
+    },
+  );
+
+  it('falla si se le pasa otra oferta', () => {
+    expect(() =>
+      proposalIn('ACCEPTED').revealsContactsTo('ana', offer({ id: 'otra' })),
+    ).toThrow(/no corresponde/);
+  });
+});

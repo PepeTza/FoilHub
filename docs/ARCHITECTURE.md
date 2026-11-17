@@ -118,7 +118,7 @@ stateDiagram-v2
     CANCELLED --> [*]
 ```
 
-- Métodos: `cancel(byUserId)` (solo el dueño, solo si `OPEN`), `complete(at)` (solo si `OPEN`).
+- Métodos: `cancel(byUserId, at)` (solo el dueño, solo si `OPEN`), `complete(at)` (solo si `OPEN`). Ambos asignan `closedAt = at` (la fecha viene de `Clock`).
 
 **TradeProposal**
 - `id`, `offerId`, `proposerId`, `counterOfferId | null`, `message | null` (máx. 280), `status`, `createdAt`, `respondedAt | null`.
@@ -133,7 +133,9 @@ stateDiagram-v2
     PENDING --> CANCELLED: el proponente la retira
 ```
 
-- Métodos: `accept(byUserId, offer)`, `reject(byUserId, offer)`, `cancel(byUserId)`, `autoReject(at)`.
+- Métodos: `accept(byUserId, offer, at)` (revisa primero `PENDING` y después que la oferta siga `OPEN`), `reject(byUserId, offer, at)`, `cancel(byUserId, at)`, `autoReject(at)`.
+- `create(...)` recibe la oferta y la contraoferta (entidades) y valida ahí el self-trade, que la oferta esté `OPEN` y que la contraoferta sea del proponente y haga match con `TradeMatcher`.
+- `revealsContactsTo(viewerId, offer)`: los contactos de las dos partes solo se muestran si la propuesta está `ACCEPTED` y quien consulta es el dueño de la oferta o el proponente.
 
 ### Servicio de dominio: `TradeMatcher`
 
@@ -199,7 +201,7 @@ Cada caso de uso es una clase con un único método `execute(input): Promise<out
 | offers | `FindMatchesForOfferUseCase` | Candidatos del repo filtrados con `TradeMatcher` | `OfferNotFound`, `NotOfferOwner` |
 | proposals | `ProposeTradeUseCase` | Crea propuesta `PENDING` sobre una oferta `OPEN` ajena; valida `counterOfferId` con `TradeMatcher` | `OfferNotFound`, `OfferNotOpen`, `SelfTrade`, `DuplicateProposal`, `CounterOfferNotMatching` |
 | proposals | `ListMyProposalsUseCase` | `box = sent \| received`, filtro por estado | — |
-| proposals | `AcceptProposalUseCase` | En **una transacción**: propuesta → `ACCEPTED`, oferta → `COMPLETED`, contraoferta (si hay) → `COMPLETED`, demás `PENDING` de esa oferta → `REJECTED`. Devuelve los contactos de ambas partes | `ProposalNotFound`, `NotOfferOwner`, `ProposalNotPending`, `OfferNotOpen`, `ConcurrencyConflict` |
+| proposals | `AcceptProposalUseCase` | En **una transacción**: propuesta → `ACCEPTED`, oferta → `COMPLETED` (se escribe primero), contraoferta (si hay) → `COMPLETED`, demás `PENDING` de la oferta **y de la contraoferta** → `REJECTED`. Devuelve los contactos de ambas partes | `ProposalNotFound`, `NotOfferOwner`, `ProposalNotPending`, `OfferNotOpen`, `ConcurrencyConflict` |
 | proposals | `RejectProposalUseCase` | Solo el dueño de la oferta | `ProposalNotFound`, `NotOfferOwner`, `ProposalNotPending` |
 | proposals | `CancelProposalUseCase` | Solo el proponente | `ProposalNotFound`, `NotProposalParty`, `ProposalNotPending` |
 
@@ -208,6 +210,7 @@ Cada caso de uso es una clase con un único método `execute(input): Promise<out
 ```ts
 interface UserRepository {
   findById(id: string): Promise<User | null>;
+  findByIds(ids: string[]): Promise<User[]>;  // dueños/proponentes en lote (sin N+1)
   findByUsername(username: Username): Promise<User | null>;
   save(user: User): Promise<void>;            // insert o update
 }
@@ -222,6 +225,7 @@ interface CardRepository {
 
 interface TradeOfferRepository {
   findById(id: string): Promise<TradeOffer | null>;
+  findByIds(ids: string[]): Promise<TradeOffer[]>;  // ofertas de varias propuestas en lote
   listOpen(q: { offeredCardId?: string; wantedCardId?: string; excludeOwnerId?: string; page: number; pageSize: number }): Promise<Page<TradeOffer>>;
   listByOwner(ownerId: string, status?: OfferStatus): Promise<TradeOffer[]>;
   findMatchCandidates(offer: TradeOffer): Promise<TradeOffer[]>;
@@ -233,7 +237,7 @@ interface TradeProposalRepository {
   findPendingByOffer(offerId: string): Promise<TradeProposal[]>;
   existsPending(offerId: string, proposerId: string): Promise<boolean>;
   listForUser(q: { userId: string; box: 'sent' | 'received'; status?: ProposalStatus }): Promise<TradeProposal[]>;
-  save(p: TradeProposal): Promise<void>;
+  save(p: TradeProposal): Promise<void>;     // al pasar de PENDING a otro estado: UPDATE ... WHERE status = 'PENDING'; si afecta 0 filas → ConcurrencyConflictError
   saveMany(ps: TradeProposal[]): Promise<void>;
 }
 
@@ -242,13 +246,18 @@ interface UnitOfWork {
 }
 
 interface PasswordHasher { hash(plain: string): Promise<string>; verify(plain: string, hash: string): Promise<boolean>; }
-interface TokenService  { sign(payload: { sub: string; username: string }): Promise<string>; verify(token: string): Promise<{ sub: string; username: string }>; }
+interface TokenService  { readonly expiresInSeconds: number; sign(payload: { sub: string; username: string }): Promise<string>; verify(token: string): Promise<{ sub: string; username: string }>; }
 interface CardCatalogProvider { fetchAll(): Promise<CatalogCard[]>; }   // CatalogCard = tipo plano con code, name, setName, ...
 interface IdGenerator { next(): string; }
 interface Clock { now(): Date; }
 ```
 
 `Page<T> = { items: T[]; page: number; pageSize: number; total: number }`.
+
+Notas de implementación:
+- **Ids que no son UUID:** los repositorios Prisma devuelven `null` (o los ignoran en `findByIds`) en vez de consultar; así `GET /api/offers/abc` responde `404 OFFER_NOT_FOUND` y no un 500 de la columna `uuid`.
+- **Concurrencia:** las transiciones de oferta (`OPEN` → …) y de propuesta (`PENDING` → …) se escriben con un `UPDATE` condicional. Con dos peticiones a la vez, la segunda espera el bloqueo de la fila, reevalúa el `WHERE` y actualiza 0 filas → `409 CONCURRENCY_CONFLICT`, y el `UnitOfWork` hace rollback. Por eso `AcceptProposalUseCase` escribe la oferta antes que nada.
+- **Vistas en lote:** `OfferViewAssembler` y `ProposalViewAssembler` (capa 2) cargan cartas, usuarios y ofertas con una consulta por tipo, sin importar cuántos elementos haya en la lista.
 
 Implementaciones:
 
@@ -515,7 +524,7 @@ services:
       replicas: 3
       update_config: { parallelism: 1, delay: 10s, order: start-first, failure_action: rollback, monitor: 30s }
       rollback_config: { parallelism: 1, order: start-first }
-      restart_policy: { condition: on-failure, delay: 5s, max_attempts: 5 }
+      restart_policy: { condition: on-failure, delay: 5s }   # sin max_attempts: el primer arranque de Postgres puede tardar
       resources:
         limits: { cpus: "0.50", memory: 384M }
 

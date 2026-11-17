@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend (lint, build, unit & e2e)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: foilhub_test
+          POSTGRES_USER: foilhub
+          POSTGRES_PASSWORD: foilhub_dev
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U foilhub -d foilhub_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Lint (oxlint + reglas de capas)
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      - name: Tests unitarios
+        run: npm test
+
+      - name: Tests de integración y e2e
+        env:
+          TEST_DATABASE_URL: postgresql://foilhub:foilhub_dev@localhost:5432/foilhub_test?schema=public
+        run: npm run test:e2e
+
+  frontend:
+    name: Frontend (check:styles, lint & build)
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Verificar tokens de estilos
+        run: npm run check:styles
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build

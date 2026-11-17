@@ -500,7 +500,7 @@ Juntos: `scripts/build-push.sh v0.1.0`, deploy en Swarm local, registrarse e ini
 - Después del seed, al entrar como `ana` hay matches visibles en "Mis ofertas".
 
 ### B10 · CI con GitHub Actions — *B* · *opcional* · depende de B5
-- [ ] B10 completada
+- [x] B10 completada
 
 - En cada PR: lint, build y tests del backend (con un servicio Postgres en el job) y build del frontend.
 - Al crear un tag `v*`: construir y subir las dos imágenes a Docker Hub (usuario y token como secrets de GitHub).

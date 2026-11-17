@@ -57,10 +57,11 @@ services:
       rollback_config:
         parallelism: 1
         order: start-first
+      # Sin max_attempts: en el primer deploy Postgres puede tardar en inicializar y
+      # `migrate deploy` falla hasta que esté listo; con un tope la API quedaría en 0/3.
       restart_policy:
         condition: on-failure
         delay: 5s
-        max_attempts: 5
       resources:
         limits:
           cpus: "0.50"

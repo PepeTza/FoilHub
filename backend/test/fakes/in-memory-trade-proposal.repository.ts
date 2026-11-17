@@ -3,6 +3,7 @@ import type {
   TradeProposalRepository,
 } from '../../src/application/ports/trade-proposal-repository.port.js';
 import type { TradeProposal } from '../../src/domain/entities/trade-proposal.entity.js';
+import { ConcurrencyConflictError } from '../../src/domain/errors/domain-errors.js';
 import { cloneProposal, InMemoryStore } from './clone.js';
 import type { InMemoryTradeOfferRepository } from './in-memory-trade-offer.repository.js';
 
@@ -44,11 +45,17 @@ export class InMemoryTradeProposalRepository
     return mine.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 
+  /** Igual que el repo Prisma: responder una propuesta que ya no está PENDING es un conflicto. */
   async save(proposal: TradeProposal): Promise<void> {
+    if (!proposal.isPending && !this.rows.get(proposal.id)?.isPending) {
+      throw new ConcurrencyConflictError();
+    }
     this.put(proposal);
   }
 
   async saveMany(proposals: TradeProposal[]): Promise<void> {
-    proposals.forEach((p) => this.put(p));
+    for (const proposal of proposals) {
+      await this.save(proposal);
+    }
   }
 }

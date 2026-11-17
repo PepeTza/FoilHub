@@ -3,7 +3,10 @@ import type {
   TradeProposalRepository,
 } from '../../../application/ports/trade-proposal-repository.port.js';
 import type { TradeProposal } from '../../../domain/entities/trade-proposal.entity.js';
-import { DuplicateProposalError } from '../../../domain/errors/domain-errors.js';
+import {
+  ConcurrencyConflictError,
+  DuplicateProposalError,
+} from '../../../domain/errors/domain-errors.js';
 import { TradeProposalMapper } from '../mappers/trade-proposal.mapper.js';
 import { isUniqueViolation, isUuid, type PrismaDb } from '../prisma-db.js';
 
@@ -48,6 +51,18 @@ export class PrismaTradeProposalRepository implements TradeProposalRepository {
 
   async save(proposal: TradeProposal): Promise<void> {
     const data = TradeProposalMapper.toPersistence(proposal);
+    if (!proposal.isPending) {
+      // Respuesta optimista (igual que el cierre de ofertas): solo gana quien la encuentre
+      // todavía PENDING. Con aceptar + cancelar a la vez, la segunda actualiza 0 filas.
+      const { count } = await this.db.tradeProposal.updateMany({
+        where: { id: data.id, status: 'PENDING' },
+        data: { status: data.status, respondedAt: data.respondedAt },
+      });
+      if (count === 0) {
+        throw new ConcurrencyConflictError();
+      }
+      return;
+    }
     try {
       await this.db.tradeProposal.upsert({
         where: { id: data.id },

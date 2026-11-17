@@ -79,6 +79,10 @@ export class TradeProposal {
   /** Solo el dueño de la oferta, solo si la propuesta está PENDING y la oferta OPEN. */
   accept(byUserId: string, offer: TradeOffer, at: Date): void {
     this.assertRespondableBy(byUserId, offer);
+    // Primero el estado de la propuesta: aceptar dos veces es PROPOSAL_NOT_PENDING, no OFFER_NOT_OPEN.
+    if (!this.isPending) {
+      throw new ProposalNotPendingError();
+    }
     if (!offer.isOpen) {
       throw new OfferNotOpenError();
     }
@@ -102,6 +106,22 @@ export class TradeProposal {
   /** La oferta se completó con otra propuesta o se canceló. */
   autoReject(at: Date): void {
     this.respond('REJECTED', at);
+  }
+
+  /**
+   * Los contactos de las dos partes solo se revelan cuando la propuesta fue ACEPTADA
+   * y quien consulta es el dueño de la oferta o el proponente.
+   */
+  revealsContactsTo(viewerId: string, offer: TradeOffer): boolean {
+    if (offer.id !== this.props.offerId) {
+      throw new Error(
+        `La oferta ${offer.id} no corresponde a la propuesta ${this.props.id}`,
+      );
+    }
+    return (
+      this.props.status === 'ACCEPTED' &&
+      (viewerId === this.props.proposerId || offer.isOwnedBy(viewerId))
+    );
   }
 
   get isPending(): boolean {

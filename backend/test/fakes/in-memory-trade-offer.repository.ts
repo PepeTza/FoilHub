@@ -25,6 +25,10 @@ export class InMemoryTradeOfferRepository
     return this.get(id);
   }
 
+  async findByIds(ids: string[]): Promise<TradeOffer[]> {
+    return this.all().filter((o) => ids.includes(o.id));
+  }
+
   async listOpen(q: ListOpenOffersQuery): Promise<Page<TradeOffer>> {
     const items = this.all()
       .filter(

@@ -291,7 +291,7 @@ describe('CancelTradeOfferUseCase', () => {
       createdAt: now,
     });
     alreadyCancelled.cancel('carla', now);
-    await ctx.proposals.saveMany([pending, alreadyCancelled]);
+    ctx.proposals.seed(pending, alreadyCancelled);
     ctx.clock.advance(60_000);
 
     const view = await ctx.cancel.execute({

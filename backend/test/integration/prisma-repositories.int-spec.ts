@@ -310,6 +310,40 @@ describe('PrismaTradeProposalRepository', () => {
   });
 });
 
+describe('A7: findByIds de ofertas y respuesta condicional de propuestas', () => {
+  it('findByIds trae varias ofertas e ignora ids que no son UUID', async () => {
+    const a = newOffer(ana, [agumon, 1], [gabumon, 1]);
+    const b = newOffer(beto, [gabumon, 1], [agumon, 1]);
+    await offers.save(a);
+    await offers.save(b);
+
+    expect(
+      (await offers.findByIds([a.id, b.id, 'no-es-uuid']))
+        .map((o) => o.id)
+        .sort(),
+    ).toEqual([a.id, b.id].sort());
+    expect(await offers.findByIds(['no-es-uuid'])).toEqual([]);
+  });
+
+  it('responder una propuesta que otro ya respondió → ConcurrencyConflictError', async () => {
+    const offer = newOffer(ana, [agumon, 1], [gabumon, 1]);
+    await offers.save(offer);
+    await proposals.save(newProposal(offer, beto));
+    const [stored] = await proposals.findPendingByOffer(offer.id);
+    const first = (await proposals.findById(stored!.id))!;
+    const second = (await proposals.findById(stored!.id))!;
+
+    first.cancel(beto, T1);
+    await proposals.save(first);
+    second.reject(ana, offer, T1);
+
+    await expect(proposals.save(second)).rejects.toThrow(
+      ConcurrencyConflictError,
+    );
+    expect((await proposals.findById(stored!.id))?.status).toBe('CANCELLED');
+  });
+});
+
 describe('PrismaUnitOfWork', () => {
   it('confirma los cambios si el trabajo termina bien', async () => {
     const offer = newOffer(ana, [agumon, 1], [gabumon, 1]);

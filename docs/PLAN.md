@@ -467,7 +467,7 @@ Juntos: `scripts/build-push.sh v0.1.0`, deploy en Swarm local, registrarse e ini
 ## Fase 4 — AWS y endurecimiento (días 13–17)
 
 ### B9 · Despliegue en AWS — *B* (A acompaña al menos una sesión) · depende de B5
-- [ ] B9 completada
+- [x] B9 completada
 
 - Seguir `docs/DEPLOY-AWS.md` completo: Security Group, 3 EC2, Elastic IP, Docker, Swarm, etiqueta `db=true`, secrets, deploy, importación del catálogo.
 - Se puede empezar en la Fase 3 con `v0.1.0` y luego actualizar.

@@ -31,7 +31,7 @@ Reglas de entrada:
 |---|---|---|---|---|
 | SSH | TCP | 22 | **Mi IP** | Administración |
 | HTTP | TCP | 80 | 0.0.0.0/0 | La aplicación |
-| Personalizada | TCP | 8080 | **Mi IP** | Visualizer (demo) |
+| Personalizada | TCP | 8080 | **Mi IP** *(opcional)* | Visualizer (demo). Más seguro dejarlo cerrado y usar túnel SSH: `ssh -i ~/.ssh/foilhub.pem -L 8080:localhost:8080 ubuntu@<elastic-ip>` → `http://localhost:8080` |
 | Personalizada | TCP | 2377 | `foilhub-swarm` (el mismo SG) | Gestión del clúster |
 | Personalizada | TCP | 7946 | `foilhub-swarm` | Descubrimiento entre nodos |
 | Personalizada | UDP | 7946 | `foilhub-swarm` | Descubrimiento entre nodos |
@@ -39,7 +39,9 @@ Reglas de entrada:
 
 Para que el origen sea el propio SG: créenlo primero solo con SSH y HTTP, guárdenlo, y después editen las reglas de entrada eligiendo como origen el ID `sg-…` del mismo grupo.
 
-Las reglas de salida se dejan como vienen (todo permitido).
+Si su Wi-Fi bloquea el puerto 22 saliente y necesitan entrar por **EC2 Instance Connect** desde el navegador, agreguen una regla SSH (`TCP 22`) cuyo origen sea el rango oficial `EC2_INSTANCE_CONNECT` de la región (por ejemplo `3.16.146.0/29` en `us-east-2`), nunca `0.0.0.0/0`.
+
+Las reglas de salida se dejan como vienen (`Todo el tráfico` → `0.0.0.0/0`).
 
 ## 2. Lanzar las instancias
 
@@ -48,22 +50,72 @@ EC2 → Launch instances, **3 veces** (o una vez con "Number of instances: 3" y 
 - Nombres: `foilhub-manager`, `foilhub-worker-1`, `foilhub-worker-2`.
 - AMI: **Ubuntu Server 24.04 LTS** (x86_64).
 - Tipo: `t3.small` (2 GB de RAM). Con `t3.micro` funciona, pero bajen las réplicas de la API a 2.
-- Key pair: el suyo. Security Group: `foilhub-swarm`. Disco: 20 GB gp3.
+- Key pair: el suyo (recomendado `ED25519` en formato `.pem`). Security Group: `foilhub-swarm`.
+- Disco: 20 GB `gp3` con cifrado EBS activado (**Encrypted: Yes** en *Advanced*).
 - Todas en la misma VPC y, de preferencia, la misma subnet.
-- **Advanced details → User data**: peguen este script para que Docker se instale solo:
+- **Advanced details → Metadata version:** **`V2 only`** (IMDSv2 obligatorio).
+- **Advanced details → User data**: peguen este script endurecido para actualizar Ubuntu, configurar parches automáticos, SSH sin root ni contraseñas, `fail2ban` e instalar Docker con rotación de logs (sin `live-restore`, que es incompatible con Swarm):
 
 ```bash
 #!/bin/bash
 set -eux
+export DEBIAN_FRONTEND=noninteractive
+
+# 1. Actualizar Ubuntu y habilitar parches de seguridad automáticos (sin reinicio automático)
 apt-get update
-apt-get install -y ca-certificates curl
+apt-get upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+apt-get install -y ca-certificates curl git fail2ban unattended-upgrades
+
+cat <<'EOF' > /etc/apt/apt.conf.d/51-foilhub-unattended
+Unattended-Upgrade::Automatic-Reboot "false";
+EOF
+systemctl enable --now unattended-upgrades
+
+# 2. Endurecer SSH (prefijo 01- para prioridad sobre cloud-init; crear /run/sshd para sshd -t en Ubuntu 24.04)
+cat <<'EOF' > /etc/ssh/sshd_config.d/01-hardening.conf
+PermitRootLogin no
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PermitEmptyPasswords no
+PubkeyAuthentication yes
+MaxAuthTries 3
+X11Forwarding no
+AllowUsers ubuntu
+EOF
+mkdir -p /run/sshd
+sshd -t
+systemctl try-reload-or-restart ssh
+
+# 3. Activar fail2ban para SSH (usando systemd journal en Ubuntu 24.04)
+cat <<'EOF' > /etc/fail2ban/jail.d/sshd.local
+[sshd]
+enabled = true
+backend = systemd
+maxretry = 5
+bantime = 1h
+EOF
+systemctl enable --now fail2ban
+
+# 4. Instalar Docker Engine con rotación de logs
 install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 chmod a+r /etc/apt/keyrings/docker.asc
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" \
   > /etc/apt/sources.list.d/docker.list
 apt-get update
-apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin git
+apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+mkdir -p /etc/docker
+cat <<'EOF' > /etc/docker/daemon.json
+{
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  }
+}
+EOF
+
 usermod -aG docker ubuntu
 systemctl enable --now docker
 ```
@@ -80,7 +132,10 @@ En el manager:
 
 ```bash
 ssh -i foilhub.pem ubuntu@<elastic-ip>
-docker version                       # confirma que el user data terminó (si falla, esperen 1–2 min)
+cloud-init status --wait               # confirma que el user data terminó ("status: done")
+docker version
+sudo sshd -T | grep -E '^(permitrootlogin|passwordauthentication|allowusers)'
+sudo fail2ban-client status sshd
 docker swarm init --advertise-addr <ip-privada-del-manager>
 ```
 
@@ -172,6 +227,8 @@ Tengan abiertas: una terminal SSH en el manager, otra en `worker-2`, el navegado
 | La API se reinicia en bucle | Migraciones fallan, secreto no encontrado, healthcheck demasiado estricto | `docker service logs foilhub_api`; `docker service ps --no-trunc foilhub_api` |
 | nginx responde 502 | Ninguna réplica de la API está sana | `docker service ps foilhub_api`; `/api/health` |
 | La app no carga desde internet | Puerto 80 cerrado en el SG o Elastic IP en otra instancia | SG y asociación de la Elastic IP |
+| SSH da timeout (`ssh -T git@github.com` también falla) | La red/Wi-Fi local bloquea el puerto 22 saliente | Usar datos del celular o **EC2 Instance Connect** añadiendo al SG el CIDR oficial de la región (ej. `3.16.146.0/29` en `us-east-2`) |
+| Navegador da `ERR_TIMED_OUT` (ej. Brave), pero `curl http://<elastic-ip>/api/health` responde `200` | El navegador fuerza `https://` al puerto 443 cerrado | Abrir explícitamente `http://` y desactivar la actualización automática a HTTPS para esa IP |
 
 ## 10. Costos y limpieza
 
